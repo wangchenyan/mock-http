@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>mock-http</title>
+    <script type="text/javascript">
+        window.onload = function () {
+            getRequestList(1)
+            getRequestList(0)
+        }
+
+        function getRequestList(mock) {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    var requestList = JSON.parse(xmlhttp.responseText)
+                    var id = mock ? "mock_list" : "real_list"
+                    renderList(id, requestList, mock)
+                }
+            }
+            xmlhttp.open("POST", "/getRequestList", true);
+            xmlhttp.setRequestHeader("Content-type", "application/json");
+            var body = {};
+            body.mock = mock;
+            xmlhttp.send(JSON.stringify(body));
+        }
+
+        function renderList(containerId, list, mock) {
+            const container = document.getElementById(containerId)
+            list.forEach(element => {
+                var div = document.createElement('div')
+                var a = document.createElement('a')
+                a.innerText = element
+                a.setAttribute("href", "/request?path=" + element)
+                div.appendChild(a)
+                if (mock) {
+                    var button = document.createElement('button')
+                    button.innerText = "取消Mock"
+                    button.setAttribute("type", "button")
+                    button.onclick = function () {
+                        unmock(element)
+                    }
+                    div.appendChild(button)
+                }
+                container.appendChild(div)
+            })
+        }
+
+        function unmock(path) {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    window.location.reload()
+                }
+            }
+            xmlhttp.open("POST", "/unmock", true);
+            xmlhttp.setRequestHeader("Content-type", "application/json");
+            var body = {};
+            body.path = path;
+            xmlhttp.send(JSON.stringify(body));
+        }
+    </script>
+</head>
+
+<body>
+    <h4>Mock Http 请求</h4>
+    <div id="mock_list">
+    </div>
+    <h4>真实 Http 请求</h4>
+    <div id="real_list">
+    </div>
+</body>
+
+</html>

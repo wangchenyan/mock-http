@@ -1,5 +1,18 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+    }
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = 'com.github.wangchenyan'
 
 android {
     compileSdkVersion 28
@@ -9,13 +22,8 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-    }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
+        consumerProguardFiles 'proguard-rules.pro'
     }
 
     compileOptions {
@@ -29,7 +37,4 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.koushikdutta.async:androidasync:2.2.1'
     compileOnly 'com.squareup.okhttp3:okhttp:3.14.2'
-}
-repositories {
-    mavenCentral()
 }

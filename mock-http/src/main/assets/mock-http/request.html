@@ -18,6 +18,7 @@
                 if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                     var httpEntity = JSON.parse(xmlhttp.responseText)
                     document.getElementById("request_header").innerText = httpEntity.requestHeader
+                    document.getElementById("query_parameter").innerText = httpEntity.queryParameter
                     document.getElementById("request_body").innerText = httpEntity.requestBody
                     document.getElementById("response_header").innerText = httpEntity.responseHeader
                     document.getElementById("response_body").value = httpEntity.responseBody
@@ -48,15 +49,18 @@
 </head>
 
 <body>
-    <h4>RequestHeader：</h4>
+    <h4>REQUEST HEADER:</h4>
     <p id="request_header"></p>
-    <h4>RequestBody：</h4>
+    <h4>QUERY PARAMETER:</h4>
+    <p id="query_parameter"></p>
+    <h4>REQUEST BODY:</h4>
     <p id="request_body"></p>
-    <h4>ResponseHeader：</h4>
+    <h4>RESPONSE HEADER:</h4>
     <p id="response_header"></p>
-    <h4>ResponseBody：</h4>
-    <button type="button" onclick="mock()">Mock</button>
-    <textarea id="response_body" style="width:100%;height:500px;"></textarea>
+    <h4>RESPONSE BODY:</h4>
+    <button type="button" onclick="mock()">Mock</button><br>
+    <br>
+    <textarea id="response_body" style="width:100%;height:800px;"></textarea>
 </body>
 
 </html>

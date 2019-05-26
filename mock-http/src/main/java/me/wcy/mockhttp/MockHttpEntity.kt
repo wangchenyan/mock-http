@@ -8,6 +8,7 @@ import org.json.JSONObject
 data class MockHttpEntity(
         var path: String = "",
         var requestHeader: String = "",
+        var queryParameter: String = "",
         var requestBody: String = "",
         var responseHeader: String = "",
         var responseBody: String = "") {
@@ -23,6 +24,7 @@ data class MockHttpEntity(
                 val entity = MockHttpEntity()
                 entity.path = jsonObject.optString("path")
                 entity.requestHeader = jsonObject.optString("requestHeader")
+                entity.queryParameter = jsonObject.optString("queryParameter")
                 entity.requestBody = jsonObject.optString("requestBody")
                 entity.responseHeader = jsonObject.optString("responseHeader")
                 entity.responseBody = jsonObject.getString("responseBody")
@@ -39,6 +41,7 @@ data class MockHttpEntity(
         val map = mutableMapOf<String, String>()
         map["path"] = path
         map["requestHeader"] = requestHeader
+        map["queryParameter"] = queryParameter
         map["requestBody"] = requestBody
         map["responseHeader"] = responseHeader
         map["responseBody"] = responseBody

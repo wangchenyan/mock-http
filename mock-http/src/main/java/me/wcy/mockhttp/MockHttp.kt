@@ -3,19 +3,15 @@ package me.wcy.mockhttp
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
-import org.json.JSONObject
 import android.net.wifi.WifiManager
-
 
 /**
  * Created by wcy on 2019/5/23.
  */
-class MockHttp {
+class MockHttp private constructor() {
     private var context: Context? = null
-    private var mockServer: MockServer? = null
-    private var isMockEnabled = false
-    private var mockSleepTime = 0L
+    private var mockHttpServer: MockHttpServer? = null
+    private var mockHttpOptions: MockHttpOptions? = null
     private var mockPreference: SharedPreferences? = null
     private val httpEntityMap = mutableMapOf<String, MockHttpEntity>()
 
@@ -30,33 +26,42 @@ class MockHttp {
         val instance = MockHttp()
     }
 
-    fun init(context: Context, isMockEnabled: Boolean) {
+    /**
+     * 初始化<br>
+     * 如果是多进程应用，只需要在主进程中初始化
+     *
+     * @param context 上下文
+     * @param options MOCK HTTP 配置项
+     */
+    fun init(context: Context, options: MockHttpOptions): MockHttp {
         this.context = context.applicationContext
-        this.isMockEnabled = isMockEnabled
+        this.mockHttpOptions = options
         this.mockPreference = context.getSharedPreferences(context.packageName + ".me.wcy.mock-http", Context.MODE_PRIVATE)
 
-        if (this.isMockEnabled) {
-            mockServer = MockServer(this.context!!)
-            mockServer?.startServer()
+        if (this.mockHttpOptions!!.isMockEnabled()) {
+            mockHttpServer = MockHttpServer(this.context!!)
+            mockHttpServer?.startServer()
         }
+
+        return this
     }
 
-    fun isMockEnabled(): Boolean {
-        return isMockEnabled
+    /**
+     * MOCK HTTP 配置项
+     */
+    fun getMockHttpOptions(): MockHttpOptions {
+        checkInit()
+
+        return mockHttpOptions!!
     }
 
-    fun getMockSleepTime(): Long {
-        return mockSleepTime
-    }
-
-    fun setMockSleepTime(milli: Long) {
-        mockSleepTime = milli
-    }
-
+    /**
+     * MOCK 服务器地址
+     */
     fun getMockAddress(): String {
         checkInit()
 
-        if (!isMockEnabled) {
+        if (!mockHttpOptions!!.isMockEnabled()) {
             return ""
         }
 
@@ -66,11 +71,14 @@ class MockHttp {
                 (ipAddress shr 8 and 0xFF) + "." +
                 (ipAddress shr 16 and 0xFF) + "." +
                 (ipAddress shr 24 and 0xFF)
-        return "$ip:3000"
+        return "$ip:${mockHttpOptions!!.getMockServerPort()}"
     }
 
+    /**
+     * 获取 MOCK 响应结果
+     */
     fun getMockResponseBody(path: String): String? {
-        if (!isMockEnabled) {
+        if (!mockHttpOptions!!.isMockEnabled()) {
             return null
         }
 
@@ -85,10 +93,16 @@ class MockHttp {
         return null
     }
 
+    /**
+     * 记录 HTTP 请求
+     */
     fun request(path: String, entity: MockHttpEntity) {
         httpEntityMap[path] = entity
     }
 
+    /**
+     * 获取 HTTP 请求信息集合
+     */
     fun getRequestList(mock: Boolean): List<String> {
         checkInit()
 
@@ -107,6 +121,9 @@ class MockHttp {
         return unmockList
     }
 
+    /**
+     * 获取 HTTP 请求信息
+     */
     fun getRequest(path: String): MockHttpEntity? {
         if (mockPreference!!.contains(path)) {
             return MockHttpEntity.fromJson(mockPreference!!.getString(path, null))
@@ -115,7 +132,10 @@ class MockHttp {
         }
     }
 
-    fun mock(path: String, responseBody: String) {
+    /**
+     * MOCK HTTP 请求
+     */
+    internal fun mock(path: String, responseBody: String) {
         checkInit()
 
         var entity: MockHttpEntity?
@@ -135,7 +155,10 @@ class MockHttp {
         mockPreference!!.edit().putString(path, entity.toJson()).apply()
     }
 
-    fun unmock(path: String) {
+    /**
+     * 取消 MOCK HTTP 请求
+     */
+    internal fun unmock(path: String) {
         checkInit()
 
         mockPreference!!.edit().remove(path).apply()

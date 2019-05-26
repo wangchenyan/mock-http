@@ -11,12 +11,12 @@ import java.util.concurrent.TimeUnit
 /**
  * Created by wcy on 2019/5/23.
  */
-class MockInterceptor : Interceptor {
+class MockHttpInterceptor : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
-        if (!MockHttp.get().isMockEnabled()) {
+        if (!MockHttp.get().getMockHttpOptions().isMockEnabled()) {
             return chain.proceed(request)
         }
 
@@ -24,18 +24,21 @@ class MockInterceptor : Interceptor {
 
         val path = requestCopy.url().encodedPath()
         val requestHeader = requestCopy.headers().toString()
-        val queryParameter = mutableMapOf<String, String?>()
-        val queryParameterNames = requestCopy.url().queryParameterNames()
-        for (name in queryParameterNames) {
-            queryParameter[name] = requestCopy.url().queryParameter(name)
+        val queryParameter = StringBuilder()
+        for (name in requestCopy.url().queryParameterNames()) {
+            if (queryParameter.isNotEmpty()) {
+                queryParameter.append("\n")
+            }
+            queryParameter.append("$name: ${requestCopy.url().queryParameter(name)}")
         }
+
         val requestBody = bodyToString(requestCopy.body())
 
         val response: Response
         val mockResponseBody = MockHttp.get().getMockResponseBody(path)
         if (mockResponseBody != null) {
             try {
-                TimeUnit.MILLISECONDS.sleep(MockHttp.get().getMockSleepTime())
+                TimeUnit.MILLISECONDS.sleep(MockHttp.get().getMockHttpOptions().getMockSleepTime())
             } catch (e: InterruptedException) {
                 e.printStackTrace()
             }
@@ -70,7 +73,7 @@ class MockInterceptor : Interceptor {
             newResponseBody = ResponseBody.create(contentType, responseBodyString)
         }
 
-        val httpEntity = MockHttpEntity(path, requestHeader, requestBody, responseHeader, formatJson(responseBodyString))
+        val httpEntity = MockHttpEntity(path, requestHeader, queryParameter.toString(), requestBody, responseHeader, formatJson(responseBodyString))
         MockHttp.get().request(path, httpEntity)
 
         return response.newBuilder().body(newResponseBody).build()

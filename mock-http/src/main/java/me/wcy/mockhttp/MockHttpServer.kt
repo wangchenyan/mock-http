@@ -1,7 +1,6 @@
 package me.wcy.mockhttp
 
 import android.content.Context
-import android.util.Log
 import com.koushikdutta.async.AsyncServer
 import com.koushikdutta.async.http.server.AsyncHttpServer
 import org.json.JSONArray
@@ -15,7 +14,7 @@ import java.nio.charset.Charset
 /**
  * Created by wcy on 2019/5/24.
  */
-class MockServer(private val context: Context) {
+internal class MockHttpServer(private val context: Context) {
     private val asyncHttpServer = AsyncHttpServer()
     private val asyncServer = AsyncServer()
 
@@ -79,7 +78,7 @@ class MockServer(private val context: Context) {
             }
         }
 
-        asyncHttpServer.listen(asyncServer, 3000)
+        asyncHttpServer.listen(asyncServer, MockHttp.get().getMockHttpOptions().getMockServerPort())
     }
 
     private fun getAssetsContent(name: String): String {

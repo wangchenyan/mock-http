@@ -7,7 +7,8 @@ import android.view.View
 import android.widget.ScrollView
 import kotlinx.android.synthetic.main.activity_main.*
 import me.wcy.mockhttp.MockHttp
-import me.wcy.mockhttp.MockInterceptor
+import me.wcy.mockhttp.MockHttpInterceptor
+import me.wcy.mockhttp.MockHttpOptions
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray
@@ -18,7 +19,7 @@ import java.util.concurrent.Executors
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private val okHttpClient = OkHttpClient()
             .newBuilder()
-            .addInterceptor(MockInterceptor())
+            .addInterceptor(MockHttpInterceptor())
             .build()
     private val executor = Executors.newSingleThreadExecutor()
 
@@ -26,7 +27,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        MockHttp.get().init(applicationContext, true)
+        MockHttp.get().init(applicationContext,
+                MockHttpOptions.Builder()
+                        .setMockEnable(true)
+                        .setMockServerPort(3001)
+                        .setMockSleepTime(500)
+                        .build())
 
         log("\nMock 地址：\n${MockHttp.get().getMockAddress()}")
     }
@@ -42,9 +48,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private fun request() {
         executor.execute {
             val url = "http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.billboard.billList&type=2&size=1&offset=0"
+            val ua = Build.BRAND + "/" + Build.MODEL + "/" + Build.VERSION.RELEASE
             val request = Request.Builder()
                     .url(url)
-                    .header("User-Agent", Build.BRAND + "/" + Build.MODEL + "/" + Build.VERSION.RELEASE)
+                    .header("User-Agent", ua)
                     .build()
 
             log("\n开始请求：\n$url")

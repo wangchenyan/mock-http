@@ -31,6 +31,8 @@ MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可�
 
 更加直观的感受，可以查看视频演示
 
+![](https://raw.githubusercontent.com/wangchenyan/mock-http/master/art/demo.jpg)
+
 [点击查看视频](https://v.youku.com/v_show/id_XNDE5ODgxOTE0OA==.html)
 
 目前仅支持 OKHTTP。

@@ -73,7 +73,12 @@ class MockHttpInterceptor : Interceptor {
             newResponseBody = ResponseBody.create(contentType, responseBodyString)
         }
 
-        val httpEntity = MockHttpEntity(path, requestHeader, queryParameter.toString(), requestBody, responseHeader, formatJson(responseBodyString))
+        val httpEntity = MockHttpEntity(path)
+        httpEntity.requestHeader = requestHeader
+        httpEntity.queryParameter = queryParameter.toString()
+        httpEntity.requestBody = requestBody
+        httpEntity.responseHeader = responseHeader
+        httpEntity.responseBody = formatJson(responseBodyString)
         MockHttp.get().request(path, httpEntity)
 
         return response.newBuilder().body(newResponseBody).build()

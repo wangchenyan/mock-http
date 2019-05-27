@@ -10,6 +10,7 @@
         window.onload = function () {
             path = window.location.search.replace("?path=", "")
             getRequest()
+            document.getElementById("title-text").innerText = path
         }
 
         function getRequest() {
@@ -17,11 +18,11 @@
             xmlhttp.onreadystatechange = function () {
                 if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                     var httpEntity = JSON.parse(xmlhttp.responseText)
-                    document.getElementById("request_header").innerText = httpEntity.requestHeader
-                    document.getElementById("query_parameter").innerText = httpEntity.queryParameter
-                    document.getElementById("request_body").innerText = httpEntity.requestBody
-                    document.getElementById("response_header").innerText = httpEntity.responseHeader
-                    document.getElementById("response_body").value = httpEntity.responseBody
+                    document.getElementById("request-header").innerText = httpEntity.requestHeader
+                    document.getElementById("query-parameter").innerText = httpEntity.queryParameter
+                    document.getElementById("request-body").innerText = httpEntity.requestBody
+                    document.getElementById("response-header").innerText = httpEntity.responseHeader
+                    document.getElementById("response-body").value = httpEntity.responseBody
                 }
             }
             xmlhttp.open("POST", "/getRequest", true);
@@ -35,32 +36,99 @@
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.onreadystatechange = function () {
                 if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                    alert("Mock Success");
+                    alert("MOCK SUCCESS");
                 }
             }
             xmlhttp.open("POST", "/mock", true);
             xmlhttp.setRequestHeader("Content-type", "application/json");
             var body = {};
             body.path = path;
-            body.responseBody = encodeURI(document.getElementById("response_body").value);
+            body.responseBody = encodeURI(document.getElementById("response-body").value);
             xmlhttp.send(JSON.stringify(body));
         }
     </script>
+
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            overflow-x: hidden;
+        }
+
+        #title-bar {
+            width: 100%;
+            height: 60px;
+            background: #2196f3;
+            padding-left: 32px;
+            padding-right: 32px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        #title-text {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #content {
+            width: 100%;
+            flex-grow: 1;
+            margin-top: 60px;
+            margin-bottom: 20px;
+            padding-left: 32px;
+            padding-right: 32px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .text {
+            color: #757575;
+        }
+
+        #mock-button {
+            width: 100px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            background: #2196f3;
+            text-align: center;
+            color: white;
+        }
+
+        #response-body {
+            height: 700px;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 
 <body>
-    <h4>REQUEST HEADER:</h4>
-    <p id="request_header"></p>
-    <h4>QUERY PARAMETER:</h4>
-    <p id="query_parameter"></p>
-    <h4>REQUEST BODY:</h4>
-    <p id="request_body"></p>
-    <h4>RESPONSE HEADER:</h4>
-    <p id="response_header"></p>
-    <h4>RESPONSE BODY:</h4>
-    <button type="button" onclick="mock()">Mock</button><br>
-    <br>
-    <textarea id="response_body" style="width:100%;height:800px;"></textarea>
+    <div id="title-bar">
+        <div id="title-text"></div>
+    </div>
+    <div id="content">
+        <h4>REQUEST HEADER:</h4>
+        <div id="request-header" class="text"></div>
+        <h4>QUERY PARAMETER:</h4>
+        <div id="query-parameter" class="text"></div>
+        <h4>REQUEST BODY:</h4>
+        <div id="request-body" class="text"></div>
+        <h4>RESPONSE HEADER:</h4>
+        <div id="response-header" class="text"></div>
+        <h4>RESPONSE BODY:</h4>
+        <div id="mock-button" onclick="mock()">MOCK</div>
+        <textarea id="response-body"></textarea>
+    </div>
+    <a href="https://github.com/wangchenyan/mock-http" style="position:fixed;top:0px;right:0px;">
+        <img width="149" height="149"
+            src="https://github.blog/wp-content/uploads/2008/12/forkme_right_green_007200.png?resize=149%2C149"
+            class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
 </body>
 
 </html>

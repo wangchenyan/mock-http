@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>mock-http</title>
+    <title>MOCK HTTP</title>
     <script type="text/javascript">
         window.onload = function () {
             getRequestList(1)
@@ -15,7 +15,7 @@
             xmlhttp.onreadystatechange = function () {
                 if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                     var requestList = JSON.parse(xmlhttp.responseText)
-                    var id = mock ? "mock_list" : "real_list"
+                    var id = mock ? "mock-list" : "real-list"
                     renderList(id, requestList, mock)
                 }
             }
@@ -30,14 +30,15 @@
             const container = document.getElementById(containerId)
             list.forEach(element => {
                 var div = document.createElement('div')
+                div.className = "path-item"
                 var a = document.createElement('a')
                 a.innerText = element
-                a.setAttribute("href", "/request?path=" + element)
+                a.href = "/request?path=" + element
                 div.appendChild(a)
                 if (mock) {
-                    var button = document.createElement('button')
-                    button.innerText = "取消Mock"
-                    button.setAttribute("type", "button")
+                    var button = document.createElement('div')
+                    button.innerText = "UNMOCK"
+                    button.className = "unmock-button"
                     button.onclick = function () {
                         unmock(element)
                     }
@@ -61,15 +62,78 @@
             xmlhttp.send(JSON.stringify(body));
         }
     </script>
+
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            overflow-x: hidden;
+        }
+
+        #title-bar {
+            width: 100%;
+            height: 80px;
+            background: #2196f3;
+            padding-left: 32px;
+            padding-right: 32px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        #title-text {
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        #content {
+            width: 100%;
+            margin-top: 80px;
+            margin-bottom: 20px;
+            padding-left: 32px;
+            padding-right: 32px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .path-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .unmock-button {
+            padding-left: 10px;
+            padding-right: 10px;
+            margin-left: 10px;
+            background: #2196f3;
+            color: white;
+        }
+    </style>
 </head>
 
 <body>
-    <h4>MOCK HTTP 请求</h4>
-    <div id="mock_list">
+    <div id="title-bar">
+        <div id="title-text">MOCK HTTP</div>
     </div>
-    <h4>真实 HTTP 请求</h4>
-    <div id="real_list">
+    <div id="content">
+        <h4>MOCK HTTP 请求</h4>
+        <div id="mock-list">
+        </div>
+        <h4>真实 HTTP 请求</h4>
+        <div id="real-list">
+        </div>
     </div>
+    <a href="https://github.com/wangchenyan/mock-http" style="position:fixed;top:0px;right:0px;">
+        <img width="149" height="149"
+            src="https://github.blog/wp-content/uploads/2008/12/forkme_right_green_007200.png?resize=149%2C149"
+            class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
 </body>
 
 </html>

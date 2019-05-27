@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.wifi.WifiManager
+import android.util.Log
 
 /**
+ * MOCK HTTP
  * Created by wcy on 2019/5/23.
  */
 class MockHttp private constructor() {
@@ -13,7 +15,7 @@ class MockHttp private constructor() {
     private var mockHttpServer: MockHttpServer? = null
     private var mockHttpOptions: MockHttpOptions? = null
     private var mockPreference: SharedPreferences? = null
-    private val httpEntityMap = mutableMapOf<String, MockHttpEntity>()
+    private var httpEntityMap: MutableMap<String, MockHttpEntity>? = null
 
     companion object {
         fun get(): MockHttp {
@@ -30,24 +32,46 @@ class MockHttp private constructor() {
      * 初始化<br>
      * 如果是多进程应用，只需要在主进程中初始化
      *
-     * @param context 上下文
+     * @param ctx 上下文
      * @param options MOCK HTTP 配置项
      */
-    fun init(context: Context, options: MockHttpOptions): MockHttp {
-        this.context = context.applicationContext
-        this.mockHttpOptions = options
-        this.mockPreference = context.getSharedPreferences(context.packageName + ".me.wcy.mock-http", Context.MODE_PRIVATE)
-
-        if (this.mockHttpOptions!!.isMockEnabled()) {
-            mockHttpServer = MockHttpServer(this.context!!)
-            mockHttpServer?.startServer()
+    fun init(ctx: Context, options: MockHttpOptions) {
+        if (context != null) {
+            Log.d("MOCK-HTTP", "re-init, destroy first")
+            destroy()
         }
 
-        return this
+        Log.d("MOCK-HTTP", "init")
+
+        context = ctx.applicationContext
+        mockHttpOptions = options
+        mockPreference = context!!.getSharedPreferences(context!!.packageName + ".com.github.wangchenyan.mock-http", Context.MODE_PRIVATE)
+        httpEntityMap = mutableMapOf()
+
+        if (mockHttpOptions!!.isMockEnabled()) {
+            mockHttpServer = MockHttpServer()
+            mockHttpServer?.startServer(context!!)
+        }
     }
 
     /**
-     * MOCK HTTP 配置项
+     * 停止 MOCK 服务，释放资源
+     */
+    fun destroy() {
+        Log.d("MOCK-HTTP", "destroy")
+
+        context = null
+        mockHttpOptions = null
+        mockPreference = null
+        httpEntityMap?.clear()
+        httpEntityMap = null
+        mockHttpServer?.stopServer()
+        mockHttpServer = null
+
+    }
+
+    /**
+     * 获取 MOCK HTTP 配置项
      */
     fun getMockHttpOptions(): MockHttpOptions {
         checkInit()
@@ -56,7 +80,7 @@ class MockHttp private constructor() {
     }
 
     /**
-     * MOCK 服务器地址
+     * 获取 MOCK 服务器地址
      */
     fun getMockAddress(): String {
         checkInit()
@@ -76,13 +100,15 @@ class MockHttp private constructor() {
 
     /**
      * 获取 MOCK 响应结果
+     *
+     * @param path 路径
      */
     fun getMockResponseBody(path: String): String? {
+        checkInit()
+
         if (!mockHttpOptions!!.isMockEnabled()) {
             return null
         }
-
-        checkInit()
 
         if (mockPreference!!.contains(path)) {
             val json = mockPreference!!.getString(path, null)
@@ -95,13 +121,20 @@ class MockHttp private constructor() {
 
     /**
      * 记录 HTTP 请求
+     *
+     * @param path 路径
+     * @param entity 请求实体
      */
     fun request(path: String, entity: MockHttpEntity) {
-        httpEntityMap[path] = entity
+        checkInit()
+
+        httpEntityMap!![path] = entity
     }
 
     /**
      * 获取 HTTP 请求信息集合
+     *
+     * @param mock true: 已 MOCK 请求, false: 未 MOCK 请求
      */
     fun getRequestList(mock: Boolean): List<String> {
         checkInit()
@@ -112,7 +145,7 @@ class MockHttp private constructor() {
         }
 
         val unmockList = mutableListOf<String>()
-        for (path in httpEntityMap.keys) {
+        for (path in httpEntityMap!!.keys) {
             if (!mockList.contains(path)) {
                 unmockList.add(path)
             }
@@ -123,24 +156,31 @@ class MockHttp private constructor() {
 
     /**
      * 获取 HTTP 请求信息
+     *
+     * @param path 路径
      */
     fun getRequest(path: String): MockHttpEntity? {
+        checkInit()
+
         if (mockPreference!!.contains(path)) {
             return MockHttpEntity.fromJson(mockPreference!!.getString(path, null))
         } else {
-            return httpEntityMap[path]
+            return httpEntityMap!![path]
         }
     }
 
     /**
      * MOCK HTTP 请求
+     *
+     * @param path 路径
+     * @param responseBody 响应体
      */
     internal fun mock(path: String, responseBody: String) {
         checkInit()
 
         var entity: MockHttpEntity?
-        if (httpEntityMap.containsKey(path)) {
-            entity = httpEntityMap[path]
+        if (httpEntityMap!!.containsKey(path)) {
+            entity = httpEntityMap!![path]
         } else if (mockPreference!!.contains(path)) {
             entity = MockHttpEntity.fromJson(mockPreference!!.getString(path, null))
         } else {
@@ -157,6 +197,8 @@ class MockHttp private constructor() {
 
     /**
      * 取消 MOCK HTTP 请求
+     *
+     * @param path 路径
      */
     internal fun unmock(path: String) {
         checkInit()
@@ -164,9 +206,12 @@ class MockHttp private constructor() {
         mockPreference!!.edit().remove(path).apply()
     }
 
+    /**
+     * 检查是否初始化
+     */
     private fun checkInit() {
         if (context == null) {
-            throw IllegalStateException("mock-http not init, please check.")
+            throw IllegalStateException("mock-http not init, please init first.")
         }
     }
 }

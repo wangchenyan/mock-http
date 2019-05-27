@@ -1,6 +1,5 @@
 package me.wcy.mockhttp.sample
 
-import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -37,27 +36,38 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         log("\nMock 地址：\n${MockHttp.get().getMockAddress()}")
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        MockHttp.get().destroy()
+    }
+
     override fun onClick(v: View?) {
         when (v) {
-            btn_request -> {
-                request()
+            btn_request_1 -> {
+                request("https://www.wanandroid.com/article/top/json")
+            }
+            btn_request_2 -> {
+                request("https://www.wanandroid.com/hotkey/json")
             }
         }
     }
 
-    private fun request() {
+    private fun request(url: String) {
         executor.execute {
-            val url = "http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.billboard.billList&type=2&size=1&offset=0"
-            val ua = Build.BRAND + "/" + Build.MODEL + "/" + Build.VERSION.RELEASE
             val request = Request.Builder()
                     .url(url)
-                    .header("User-Agent", ua)
+                    .header("MOCK-HTTP-HEADER", "TEST")
                     .build()
 
             log("\n开始请求：\n$url")
 
-            val response = okHttpClient.newCall(request).execute()
-            val responseBody = response.body()?.string() ?: ""
+            var responseBody: String
+            try {
+                val response = okHttpClient.newCall(request).execute()
+                responseBody = response.body()?.string() ?: ""
+            } catch (e: Exception) {
+                responseBody = e.message ?: "request fail"
+            }
 
             log("\n请求结果：\n${formatJson(responseBody)}")
         }

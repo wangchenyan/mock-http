@@ -93,7 +93,7 @@ val okHttpClient = OkHttpClient()
 
 总体思路：
 
-![架构图](https://raw.githubusercontent.com/wangchenyan/mock-http/master/art/architecture.png)
+![架构图](https://raw.githubusercontent.com/wangchenyan/mock-http/master/art/architecture.jpg)
 
 1. 利用 [AndroidAsync](https://github.com/koush/AndroidAsync) 启动一个本地 Server，使局域网中的其他设备可以访问到该设备
 2. 利用 OKHTTP 拦截器 Interceptor 拦截 HTTP 请求，返回模拟数据

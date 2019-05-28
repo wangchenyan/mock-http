@@ -16,7 +16,7 @@ class MockHttpInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
-        if (!MockHttp.get().getMockHttpOptions().isMockEnabled()) {
+        if (!MockHttp.get().hasInit()) {
             return chain.proceed(request)
         }
 

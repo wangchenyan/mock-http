@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         MockHttp.get().init(applicationContext,
                 MockHttpOptions.Builder()
-                        .setMockEnable(true)
                         .setMockServerPort(3001)
                         .setMockSleepTime(500)
                         .build())

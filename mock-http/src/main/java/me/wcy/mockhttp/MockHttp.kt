@@ -16,6 +16,7 @@ class MockHttp private constructor() {
     private var mockHttpOptions: MockHttpOptions? = null
     private var mockPreference: SharedPreferences? = null
     private var httpEntityMap: MutableMap<String, MockHttpEntity>? = null
+    private var hasInit = false
 
     companion object {
         fun get(): MockHttp {
@@ -29,7 +30,7 @@ class MockHttp private constructor() {
     }
 
     /**
-     * 初始化<br>
+     * 启动 MOCK 服务，开始 MOCK<br>
      * 如果是多进程应用，只需要在主进程中初始化
      *
      * @param ctx 上下文
@@ -37,7 +38,7 @@ class MockHttp private constructor() {
      */
     fun init(ctx: Context, options: MockHttpOptions) {
         if (context != null) {
-            Log.d("MOCK-HTTP", "re-init, destroy first")
+            Log.w("MOCK-HTTP", "mock-http has init, destroy first")
             destroy()
         }
 
@@ -47,11 +48,17 @@ class MockHttp private constructor() {
         mockHttpOptions = options
         mockPreference = context!!.getSharedPreferences(context!!.packageName + ".com.github.wangchenyan.mock-http", Context.MODE_PRIVATE)
         httpEntityMap = mutableMapOf()
+        mockHttpServer = MockHttpServer()
+        mockHttpServer?.startServer(context!!)
 
-        if (mockHttpOptions!!.isMockEnabled()) {
-            mockHttpServer = MockHttpServer()
-            mockHttpServer?.startServer(context!!)
-        }
+        hasInit = true
+    }
+
+    /**
+     * 是否已经初始化
+     */
+    fun hasInit(): Boolean {
+        return hasInit
     }
 
     /**
@@ -68,6 +75,7 @@ class MockHttp private constructor() {
         mockHttpServer?.stopServer()
         mockHttpServer = null
 
+        hasInit = false
     }
 
     /**
@@ -85,10 +93,6 @@ class MockHttp private constructor() {
     fun getMockAddress(): String {
         checkInit()
 
-        if (!mockHttpOptions!!.isMockEnabled()) {
-            return ""
-        }
-
         val wifiManager = context!!.getSystemService(Context.WIFI_SERVICE) as WifiManager
         val ipAddress = wifiManager.connectionInfo.ipAddress
         val ip = (ipAddress and 0xFF).toString() + "." +
@@ -105,10 +109,6 @@ class MockHttp private constructor() {
      */
     fun getMockResponseBody(path: String): String? {
         checkInit()
-
-        if (!mockHttpOptions!!.isMockEnabled()) {
-            return null
-        }
 
         if (mockPreference!!.contains(path)) {
             val json = mockPreference!!.getString(path, null)

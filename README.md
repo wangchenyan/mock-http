@@ -64,7 +64,7 @@ allprojects {
 
 ```
 dependencies {
-    implementation 'com.github.wangchenyan:mock-http:1.+'
+    implementation 'com.github.wangchenyan:mock-http:1.0'
 }
 ```
 
@@ -90,10 +90,10 @@ val okHttpClient = OkHttpClient()
 
 | 方法 | 描述 | 备注 |
 | ---- | ---- | ---- |
-| init(Context, MockHttpOptions) | 初始化 | 如果是多进程应用，只需要在主进程中初始化 |
+| init(Context, MockHttpOptions) | 启动 MOCK 服务，开始 MOCK | 如果是多进程应用，只需要在主进程中初始化 |
 | destroy() | 停止 MOCK 服务，释放资源 | |
 | getMockAddress() | 获取 MOCK 服务器地址 | |
-| MockHttpOptions.Builder().setMockEnable(Boolean) | 设置是否开启 MOCK | |
+| hasInit() | 是否已经初始化 | |
 | MockHttpOptions.Builder().setMockServerPort(Int) | 设置 MOCK 端口 | |
 | MockHttpOptions.Builder().setMockSleepTime(Long) | 设置 MOCK 接口等待时长 | 单位毫秒，默认为0 |
 
@@ -152,7 +152,7 @@ class MockHttpInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
     
-        if (!MockHttp.get().getMockHttpOptions().isMockEnabled()) {
+        if (!MockHttp.get().hasInit()) {
             return chain.proceed(request)
         }
     

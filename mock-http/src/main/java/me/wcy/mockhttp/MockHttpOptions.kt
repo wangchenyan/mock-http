@@ -4,16 +4,8 @@ package me.wcy.mockhttp
  * Created by wcy on 2019/5/26.
  */
 class MockHttpOptions private constructor() {
-    private var isMockEnabled = false
     private var mockServerPort = 3001
     private var mockSleepTime = 0L
-
-    /**
-     * 是否启用 MOCK
-     */
-    fun isMockEnabled(): Boolean {
-        return isMockEnabled
-    }
 
     /**
      * MOCK 服务端口
@@ -31,14 +23,6 @@ class MockHttpOptions private constructor() {
 
     class Builder {
         private val mockHttpOptions = MockHttpOptions()
-
-        /**
-         * 是否启用 MOCK
-         */
-        fun setMockEnable(enable: Boolean): Builder {
-            mockHttpOptions.isMockEnabled = enable
-            return this
-        }
 
         /**
          * 设置 MOCK 服务端口

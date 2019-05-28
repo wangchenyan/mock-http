@@ -15,21 +15,19 @@ import java.nio.charset.Charset
  * Created by wcy on 2019/5/24.
  */
 internal class MockHttpServer {
-    private var context: Context? = null
     private var asyncHttpServer: AsyncHttpServer? = null
     private var asyncServer: AsyncServer? = null
 
-    fun startServer(ctx: Context) {
-        context = ctx.applicationContext
+    fun startServer(context: Context) {
         asyncHttpServer = AsyncHttpServer()
         asyncServer = AsyncServer()
 
         asyncHttpServer!!.get("/") { request, response ->
-            response.send(getAssetsContent("index.html"))
+            response.send(getAssetsContent(context, "index.html"))
         }
 
         asyncHttpServer!!.get("/request") { request, response ->
-            response.send(getAssetsContent("request.html"))
+            response.send(getAssetsContent(context, "request.html"))
         }
 
         asyncHttpServer!!.post("/getRequestList") { request, response ->
@@ -87,17 +85,16 @@ internal class MockHttpServer {
     }
 
     fun stopServer() {
-        context = null
         asyncHttpServer?.stop()
         asyncServer?.stop()
         asyncHttpServer = null
         asyncServer = null
     }
 
-    private fun getAssetsContent(name: String): String {
+    private fun getAssetsContent(context: Context, name: String): String {
         var bis: BufferedInputStream? = null
         try {
-            bis = BufferedInputStream(context!!.assets.open("mock-http/$name"))
+            bis = BufferedInputStream(context.assets.open("mock-http/$name"))
             val baos = ByteArrayOutputStream()
             val tmp = ByteArray(10240)
             var len = bis.read(tmp)

@@ -1,6 +1,8 @@
 # MOCK-HTTP
 
 [![](https://jitpack.io/v/wangchenyan/mock-http.svg)](https://jitpack.io/#wangchenyan/mock-http)
+![size](https://img.shields.io/badge/size-50k-FF4500.svg?style=flat)
+![GitHub](https://img.shields.io/github/license/wangchenyan/mock-http.svg)
 
 MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可以代替 Charles。目前仅支持查看和模拟 OKHTTP 发送的请求。
 
@@ -10,7 +12,7 @@ MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可�
 
 以往，我们想要模拟接口返回数据，一般是利用 Charles 作为代理中转，配合在线 MOCK 网站 mocky.io，以模拟接口返回。
 
-![](https://raw.githubusercontent.com/wangchenyan/mock-http/master/art/charles.jpg)
+![charles](https://raw.githubusercontent.com/wangchenyan/mock-http/master/art/charles.jpg)
 
 一般需要以下几个步骤：
 

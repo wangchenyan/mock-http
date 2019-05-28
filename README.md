@@ -16,9 +16,8 @@ MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可�
 
 1. 下载、安装 Charles
 2. 手机连接 Charles 代理
-3. APP 请求接口
-4. 访问 mock.io 创建模拟数据网址
-5. 使用 Charles 将需要模拟的接口映射到该网址
+3. 访问 mock.io 创建模拟数据网址
+4. 使用 Charles 将需要模拟的接口映射到该网址
 
 如果是 HTTPS 请求，手机还需要安装证书，有些手机安装证书可能失败（至今我还没有成功过），过程将更加繁琐。
 
@@ -35,9 +34,7 @@ MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可�
 
 更加直观的感受，可以查看视频演示
 
-![](https://raw.githubusercontent.com/wangchenyan/mock-http/master/art/demo.jpg)
-
-[点击查看视频](https://v.youku.com/v_show/id_XNDE5ODgxOTE0OA==.html)
+[![](https://raw.githubusercontent.com/wangchenyan/mock-http/master/art/demo.jpg)](https://v.youku.com/v_show/id_XNDE5ODgxOTE0OA==.html)
 
 ## 使用方法
 

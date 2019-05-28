@@ -34,6 +34,7 @@
                 var a = document.createElement('a')
                 a.innerText = element
                 a.href = "/request?path=" + element
+                a.target = "_blank"
                 div.appendChild(a)
                 if (mock) {
                     var button = document.createElement('div')
@@ -130,7 +131,7 @@
         <div id="real-list">
         </div>
     </div>
-    <a href="https://github.com/wangchenyan/mock-http" style="position:fixed;top:0px;right:0px;">
+    <a href="https://github.com/wangchenyan/mock-http" target="_blank" style="position:fixed;top:0px;right:0px;">
         <img width="149" height="149"
             src="https://github.blog/wp-content/uploads/2008/12/forkme_right_green_007200.png?resize=149%2C149"
             class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>

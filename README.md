@@ -64,7 +64,7 @@ allprojects {
 
 ```
 dependencies {
-    implementation 'com.github.wangchenyan:mock-http:1.0'
+    implementation 'com.github.wangchenyan:mock-http:1.2'
 }
 ```
 

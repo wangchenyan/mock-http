@@ -187,7 +187,8 @@ class MockHttpInterceptor : Interceptor {
 
 ## 致谢
 
-[AndroidAsync](https://github.com/koush/AndroidAsync)
+- [解决一位群友问题 Android上的隔空取物](https://mp.weixin.qq.com/s/9sB7ZDods6sYWG3YPjhInQ)
+- [AndroidAsync](https://github.com/koush/AndroidAsync)
 
 ## 关于作者
 

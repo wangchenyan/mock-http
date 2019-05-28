@@ -35,6 +35,8 @@ MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可�
 
 目前仅支持 OKHTTP。
 
+混淆模式下，包大小增加量为50k。
+
 更加直观的感受，可以查看视频演示
 
 ![](https://raw.githubusercontent.com/wangchenyan/mock-http/master/art/demo.jpg)
@@ -107,79 +109,89 @@ val okHttpClient = OkHttpClient()
 关键代码：
 
 ```
-/**
- * 启动一个本地 Server，监听请求
- */
-fun startServer() {
-    asyncHttpServer!!.get("/") { request, response ->
-        response.send(getAssetsContent("index.html"))
-    }
+internal class MockHttpServer {
 
-    asyncHttpServer!!.get("/request") { request, response ->
-        response.send(getAssetsContent("request.html"))
-    }
-
-    asyncHttpServer!!.post("/getRequestList") { request, response ->
-        try {
-            val requestBody = request.body.get() as JSONObject
-            val mock = requestBody.getInt("mock") == 1
-            val requestList = MockHttp.get().getRequestList(mock)
-            response.setContentType("application/json")
-            response.send(JSONArray(requestList).toString())
-        } catch (e: Exception) {
-            e.printStackTrace()
-            response.code(500).end()
+    /**
+     * 启动一个本地 Server，监听请求
+     */
+    fun startServer() {
+        asyncHttpServer!!.get("/") { request, response ->
+            response.send(getAssetsContent("index.html"))
         }
+    
+        asyncHttpServer!!.get("/request") { request, response ->
+            response.send(getAssetsContent("request.html"))
+        }
+    
+        asyncHttpServer!!.post("/getRequestList") { request, response ->
+            try {
+                val requestBody = request.body.get() as JSONObject
+                val mock = requestBody.getInt("mock") == 1
+                val requestList = MockHttp.get().getRequestList(mock)
+                response.setContentType("application/json")
+                response.send(JSONArray(requestList).toString())
+            } catch (e: Exception) {
+                e.printStackTrace()
+                response.code(500).end()
+            }
+        }
+    
+        ...
+    
+        asyncHttpServer!!.listen(asyncServer, MockHttp.get().getMockHttpOptions().getMockServerPort())
     }
-
-    ...
-
-    asyncHttpServer!!.listen(asyncServer, MockHttp.get().getMockHttpOptions().getMockServerPort())
 }
 ```
 
 ```
-/**
- * 拦截 HTTP 请求
- */
-override fun intercept(chain: Interceptor.Chain): Response {
-    val request = chain.request()
+class MockHttpInterceptor : Interceptor {
 
-    if (!MockHttp.get().getMockHttpOptions().isMockEnabled()) {
-        return chain.proceed(request)
+    /**
+     * 拦截 HTTP 请求
+     */
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val request = chain.request()
+    
+        if (!MockHttp.get().getMockHttpOptions().isMockEnabled()) {
+            return chain.proceed(request)
+        }
+    
+        val response: Response
+        val mockResponseBody = MockHttp.get().getMockResponseBody(path)
+        if (mockResponseBody != null) {
+            response = Response.Builder()
+                    .body(ResponseBody.create(MediaType.parse("application/json"), mockResponseBody))
+                    .request(chain.request())
+                    .protocol(Protocol.HTTP_2)
+                    .message("Mock")
+                    .code(200)
+                    .build()
+        } else {
+            response = chain.proceed(request)
+        }
+    
+        var newResponseBody: ResponseBody? = null
+        if (isNotFileRequest(subtype)) {
+            responseBodyString = responseBody.string()
+            newResponseBody = ResponseBody.create(contentType, responseBodyString)
+        }
+    
+        val httpEntity = MockHttpEntity(path)
+        httpEntity.requestHeader = requestHeader
+        httpEntity.queryParameter = queryParameter.toString()
+        httpEntity.requestBody = requestBody
+        httpEntity.responseHeader = responseHeader
+        httpEntity.responseBody = formatJson(responseBodyString)
+        MockHttp.get().request(path, httpEntity)
+    
+        return response.newBuilder().body(newResponseBody).build()
     }
-
-    val response: Response
-    val mockResponseBody = MockHttp.get().getMockResponseBody(path)
-    if (mockResponseBody != null) {
-        response = Response.Builder()
-                .body(ResponseBody.create(MediaType.parse("application/json"), mockResponseBody))
-                .request(chain.request())
-                .protocol(Protocol.HTTP_2)
-                .message("Mock")
-                .code(200)
-                .build()
-    } else {
-        response = chain.proceed(request)
-    }
-
-    var newResponseBody: ResponseBody? = null
-    if (isNotFileRequest(subtype)) {
-        responseBodyString = responseBody.string()
-        newResponseBody = ResponseBody.create(contentType, responseBodyString)
-    }
-
-    val httpEntity = MockHttpEntity(path)
-    httpEntity.requestHeader = requestHeader
-    httpEntity.queryParameter = queryParameter.toString()
-    httpEntity.requestBody = requestBody
-    httpEntity.responseHeader = responseHeader
-    httpEntity.responseBody = formatJson(responseBodyString)
-    MockHttp.get().request(path, httpEntity)
-
-    return response.newBuilder().body(newResponseBody).build()
 }
 ```
+
+## 致谢
+
+[AndroidAsync](https://github.com/koush/AndroidAsync)
 
 ## 关于作者
 

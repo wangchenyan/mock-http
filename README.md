@@ -1,4 +1,4 @@
-# MOCK-HTTP
+# Android MOCK HTTP 接口新方式
 
 [![](https://jitpack.io/v/wangchenyan/mock-http.svg)](https://jitpack.io/#wangchenyan/mock-http)
 ![size](https://img.shields.io/badge/size-39k-FF4500.svg?style=flat)
@@ -22,7 +22,7 @@ MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可�
 4. 访问 mock.io 创建模拟数据网址
 5. 使用 Charles 将需要模拟的接口映射到该网址
 
-如果是 HTTPS 请求，则手机还需要安装证书，安装证书也存在很多问题（至今我还没有成功过），过程将更加繁琐。
+如果是 HTTPS 请求，手机还需要安装证书，有些手机安装证书可能失败（至今我还没有成功过），过程将更加繁琐。
 
 详细可参考该文章：[模拟服务器返回数据](https://yuanjunli.github.io/2016/12/15/%E6%A8%A1%E6%8B%9F%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%94%E5%9B%9E%E6%95%B0%E6%8D%AE/)
 
@@ -33,9 +33,7 @@ MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可�
 1. 添加 MOCK-HTTP 依赖
 2. 打开 WEB 浏览器，尽情模拟接口
 
-目前仅支持 OKHTTP。
-
-混淆模式下，包大小增加量为39k。
+混淆模式下，包大小增加量为39k。使用 OKHTTP 拦截器，HTTP/HTTPS 通吃，目前仅支持 OKHTTP。
 
 更加直观的感受，可以查看视频演示
 
@@ -74,7 +72,6 @@ dependencies {
 // 初始化
 MockHttp.get().init(applicationContext,
         MockHttpOptions.Builder()
-                .setMockEnable(true)
                 .setMockServerPort(3001)
                 .setMockSleepTime(500)
                 .build())

@@ -4,37 +4,19 @@
 ![size](https://img.shields.io/badge/size-39k-FF4500.svg?style=flat)
 ![GitHub](https://img.shields.io/github/license/wangchenyan/mock-http.svg)
 
-MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可以代替 Charles。目前仅支持查看和模拟 OKHTTP 发送的请求。
+MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可以代替 Charles。
 
-## 前言
+混淆模式下，包大小增加量为39k。
 
-以往，我们想要模拟接口返回数据，一般是利用 Charles 作为代理中转，配合在线 MOCK 网站 mocky.io，以模拟接口返回。
+目前仅支持查看和模拟 OKHTTP 发送的请求。
 
-![charles](https://raw.githubusercontent.com/wangchenyan/mock-http/master/art/charles.jpg)
-
-一般需要以下几个步骤：
-
-1. 下载、安装 Charles
-2. 手机连接 Charles 代理
-3. 访问 mock.io 创建模拟数据网址
-4. 使用 Charles 将需要模拟的接口映射到该网址
-
-如果是 HTTPS 请求，手机还需要安装证书，有些手机安装证书可能失败（至今我还没有成功过），过程将更加繁琐。
-
-详细可参考该文章：[模拟服务器返回数据](https://yuanjunli.github.io/2016/12/15/%E6%A8%A1%E6%8B%9F%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%94%E5%9B%9E%E6%95%B0%E6%8D%AE/)
-
-## 提升效率
-
-下面，我将介绍一种新的 MOCK 方案，两步即可模拟接口返回，而且更加易用。
-
-1. 添加 MOCK-HTTP 依赖
-2. 打开 WEB 浏览器，尽情模拟接口
-
-混淆模式下，包大小增加量为39k。使用 OKHTTP 拦截器，HTTP/HTTPS 通吃，目前仅支持 OKHTTP。
-
-更加直观的感受，可以查看视频演示
+视频演示：
 
 [![](https://raw.githubusercontent.com/wangchenyan/mock-http/master/art/demo.jpg)](https://v.youku.com/v_show/id_XNDE5ODgxOTE0OA==.html)
+
+架构设计：
+
+![](https://raw.githubusercontent.com/wangchenyan/mock-http/master/art/architecture.jpg)
 
 ## 使用方法
 
@@ -88,102 +70,6 @@ val okHttpClient = OkHttpClient()
 | hasInit() | 是否已经初始化 | |
 | MockHttpOptions.Builder().setMockServerPort(Int) | 设置 MOCK 端口 | |
 | MockHttpOptions.Builder().setMockSleepTime(Long) | 设置 MOCK 接口等待时长 | 单位毫秒，默认为0 |
-
-## 实现思路
-
-总体思路：
-
-![架构图](https://raw.githubusercontent.com/wangchenyan/mock-http/master/art/architecture.jpg)
-
-1. 利用 [AndroidAsync](https://github.com/koush/AndroidAsync) 启动一个本地 Server，使局域网中的其他设备可以访问到该设备
-2. 利用 OKHTTP 拦截器 Interceptor 拦截 HTTP 请求，返回模拟数据
-
-关键代码：
-
-```
-internal class MockHttpServer {
-
-    /**
-     * 启动一个本地 Server，监听请求
-     */
-    fun startServer() {
-        asyncHttpServer!!.get("/") { request, response ->
-            response.send(getAssetsContent("index.html"))
-        }
-    
-        asyncHttpServer!!.get("/request") { request, response ->
-            response.send(getAssetsContent("request.html"))
-        }
-    
-        asyncHttpServer!!.post("/getRequestList") { request, response ->
-            try {
-                val requestBody = request.body.get() as JSONObject
-                val mock = requestBody.getInt("mock") == 1
-                val requestList = MockHttp.get().getRequestList(mock)
-                response.setContentType("application/json")
-                response.send(JSONArray(requestList).toString())
-            } catch (e: Exception) {
-                e.printStackTrace()
-                response.code(500).end()
-            }
-        }
-    
-        ...
-    
-        asyncHttpServer!!.listen(asyncServer, MockHttp.get().getMockHttpOptions().getMockServerPort())
-    }
-}
-```
-
-```
-class MockHttpInterceptor : Interceptor {
-
-    /**
-     * 拦截 HTTP 请求
-     */
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val request = chain.request()
-    
-        if (!MockHttp.get().hasInit()) {
-            return chain.proceed(request)
-        }
-    
-        val response: Response
-        val mockResponseBody = MockHttp.get().getMockResponseBody(path)
-        if (mockResponseBody != null) {
-            response = Response.Builder()
-                    .body(ResponseBody.create(MediaType.parse("application/json"), mockResponseBody))
-                    .request(chain.request())
-                    .protocol(Protocol.HTTP_2)
-                    .message("Mock")
-                    .code(200)
-                    .build()
-        } else {
-            response = chain.proceed(request)
-        }
-    
-        var newResponseBody: ResponseBody? = null
-        if (isNotFileRequest(subtype)) {
-            responseBodyString = responseBody.string()
-            newResponseBody = ResponseBody.create(contentType, responseBodyString)
-        }
-    
-        val httpEntity = MockHttpEntity(path)
-        httpEntity.requestHeader = requestHeader
-        httpEntity.queryParameter = queryParameter.toString()
-        httpEntity.requestBody = requestBody
-        httpEntity.responseHeader = responseHeader
-        httpEntity.responseBody = formatJson(responseBodyString)
-        MockHttp.get().request(path, httpEntity)
-    
-        return response.newBuilder().body(newResponseBody).build()
-    }
-}
-```
-
-## 源码
-
-[https://github.com/wangchenyan/mock-http](https://github.com/wangchenyan/mock-http)
 
 ## 致谢
 

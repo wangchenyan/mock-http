@@ -18,6 +18,8 @@ MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可�
 
 ![](https://raw.githubusercontent.com/wangchenyan/mock-http/master/art/architecture.jpg)
 
+原理解析：https://juejin.im/post/5cecce125188253a275a3d9f
+
 ## 使用方法
 
 ### Gradle
@@ -73,7 +75,6 @@ val okHttpClient = OkHttpClient()
 
 ## 致谢
 
-- [解决一位群友问题 Android上的隔空取物](https://mp.weixin.qq.com/s/9sB7ZDods6sYWG3YPjhInQ)
 - [AndroidAsync](https://github.com/koush/AndroidAsync)
 
 ## 关于作者

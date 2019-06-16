@@ -19,6 +19,10 @@
             xmlhttp.onreadystatechange = function () {
                 if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                     var httpEntity = JSON.parse(xmlhttp.responseText)
+                    var general = "Request Url: " + httpEntity.requestUrl
+                        + "\nRequest Method: " + httpEntity.requestMethod
+                        + "\nStatus Code: " + httpEntity.statusCode
+                    document.getElementById("general").innerText = general
                     document.getElementById("request-header").innerText = httpEntity.requestHeader
                     document.getElementById("query-parameter").innerText = httpEntity.queryParameter
                     document.getElementById("request-body").innerText = httpEntity.requestBody
@@ -114,15 +118,17 @@
         <div id="title-text"></div>
     </div>
     <div id="content">
-        <h4>REQUEST HEADER:</h4>
+        <h4>General</h4>
+        <div id="general" class="text"></div>
+        <h4>Request Header</h4>
         <div id="request-header" class="text"></div>
-        <h4>QUERY PARAMETER:</h4>
+        <h4>Query Parameter</h4>
         <div id="query-parameter" class="text"></div>
-        <h4>REQUEST BODY:</h4>
+        <h4>Request Body</h4>
         <div id="request-body" class="text"></div>
-        <h4>RESPONSE HEADER:</h4>
+        <h4>Response Header</h4>
         <div id="response-header" class="text"></div>
-        <h4>RESPONSE BODY:</h4>
+        <h4>Response Body</h4>
         <div id="mock-button" onclick="mock()">MOCK</div>
         <textarea id="response-body"></textarea>
     </div>

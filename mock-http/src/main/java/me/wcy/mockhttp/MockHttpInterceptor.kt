@@ -23,6 +23,8 @@ class MockHttpInterceptor : Interceptor {
         val requestCopy = request.newBuilder().build()
 
         val path = requestCopy.url().encodedPath()
+        val requestUrl = requestCopy.url().toString()
+        val requestMethod = requestCopy.method()
         val requestHeader = requestCopy.headers().toString()
         val queryParameter = StringBuilder()
         for (name in requestCopy.url().queryParameterNames()) {
@@ -55,7 +57,7 @@ class MockHttpInterceptor : Interceptor {
         }
 
         val responseHeader = response.headers().toString()
-        val code = response.code()
+        val statusCode = response.code()
         val isSuccessful = response.isSuccessful
         val message = response.message()
         val responseBody = response.body()
@@ -74,6 +76,9 @@ class MockHttpInterceptor : Interceptor {
         }
 
         val httpEntity = MockHttpEntity(path)
+        httpEntity.requestUrl = requestUrl
+        httpEntity.requestMethod = requestMethod
+        httpEntity.statusCode = statusCode
         httpEntity.requestHeader = requestHeader
         httpEntity.queryParameter = queryParameter.toString()
         httpEntity.requestBody = requestBody

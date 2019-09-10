@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             .newBuilder()
             .addInterceptor(MockHttpInterceptor())
             .build()
-    private val executor = Executors.newSingleThreadExecutor()
+    private val executor = Executors.newFixedThreadPool(5)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

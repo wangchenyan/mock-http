@@ -8,6 +8,7 @@ import java.util.*
  * Created by wcy on 2019-09-10.
  */
 object Logger {
+    private val lock = Any()
 
     fun logRequest(url: String, method: String, headers: String, params: String, body: String) {
         val options = MockHttp.get().getMockHttpOptions()
@@ -52,17 +53,19 @@ object Logger {
     }
 
     private fun printLog(log: String) {
-        val options = MockHttp.get().getMockHttpOptions()
-        val tag = options.getLogTag()
-        val level = options.getLogLevel()
-        val logs = log.split("\n")
-        for (line in logs) {
-            when (level) {
-                Log.VERBOSE -> Log.v(tag, line)
-                Log.DEBUG -> Log.d(tag, line)
-                Log.INFO -> Log.i(tag, line)
-                Log.WARN -> Log.w(tag, line)
-                Log.ERROR -> Log.e(tag, line)
+        synchronized(lock) {
+            val options = MockHttp.get().getMockHttpOptions()
+            val tag = options.getLogTag()
+            val level = options.getLogLevel()
+            val logs = log.split("\n")
+            for (line in logs) {
+                when (level) {
+                    Log.VERBOSE -> Log.v(tag, line)
+                    Log.DEBUG -> Log.d(tag, line)
+                    Log.INFO -> Log.i(tag, line)
+                    Log.WARN -> Log.w(tag, line)
+                    Log.ERROR -> Log.e(tag, line)
+                }
             }
         }
     }

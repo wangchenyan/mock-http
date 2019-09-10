@@ -4,7 +4,7 @@
 ![size](https://img.shields.io/badge/size-39k-FF4500.svg?style=flat)
 ![GitHub](https://img.shields.io/github/license/wangchenyan/mock-http.svg)
 
-MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可以代替 Charles。
+MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可以代替 Charles。支持打印网络日志。
 
 混淆模式下，包大小增加量为39k。
 
@@ -41,7 +41,7 @@ allprojects {
 
 ```
 dependencies {
-    implementation 'com.github.wangchenyan:mock-http:1.2'
+    implementation 'com.github.wangchenyan:mock-http:1.3'
 }
 ```
 
@@ -53,6 +53,9 @@ MockHttp.get().init(applicationContext,
         MockHttpOptions.Builder()
                 .setMockServerPort(3001)
                 .setMockSleepTime(500)
+                .setLogEnable(true)
+                .setLogTag("TAG-NAME")
+                .setLogLevel(Log.ERROR)
                 .build())
 
 // 添加 OKHTTP 拦截器
@@ -72,6 +75,9 @@ val okHttpClient = OkHttpClient()
 | hasInit() | 是否已经初始化 | |
 | MockHttpOptions.Builder().setMockServerPort(Int) | 设置 MOCK 端口 | |
 | MockHttpOptions.Builder().setMockSleepTime(Long) | 设置 MOCK 接口等待时长 | 单位毫秒，默认为0 |
+| MockHttpOptions.Builder().setLogEnable(Boolean) | 设置是否打印日志 | 开启 Mock 后才能打印日志 |
+| MockHttpOptions.Builder().setLogTag(String) | 设置日志标签 | |
+| MockHttpOptions.Builder().setLogLevel(Int) | 设置日志级别，参考 android.util.Log | 支持 VERBOSE DEBUG INFO WARN ERROR |
 
 ## 致谢
 

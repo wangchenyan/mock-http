@@ -2,6 +2,7 @@ package me.wcy.mockhttp.sample
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.ScrollView
 import kotlinx.android.synthetic.main.activity_main.*
@@ -30,6 +31,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 MockHttpOptions.Builder()
                         .setMockServerPort(3001)
                         .setMockSleepTime(500)
+                        .setLogEnable(true)
+                        .setLogTag("MAIN-TAG")
+                        .setLogLevel(Log.ERROR)
                         .build())
 
         log("\nMock 地址：\n${MockHttp.get().getMockAddress()}")

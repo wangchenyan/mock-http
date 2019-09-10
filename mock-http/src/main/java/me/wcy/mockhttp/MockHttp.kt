@@ -20,7 +20,7 @@ class MockHttp private constructor() {
 
     companion object {
         fun get(): MockHttp {
-            return MockHttp.SingletonHolder.instance
+            return SingletonHolder.instance
         }
     }
 

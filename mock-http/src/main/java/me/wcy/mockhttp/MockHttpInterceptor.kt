@@ -26,15 +26,18 @@ class MockHttpInterceptor : Interceptor {
         val requestUrl = requestCopy.url().toString()
         val requestMethod = requestCopy.method()
         val requestHeader = requestCopy.headers().toString()
-        val queryParameter = StringBuilder()
+        val sb = StringBuilder()
         for (name in requestCopy.url().queryParameterNames()) {
-            if (queryParameter.isNotEmpty()) {
-                queryParameter.append("\n")
+            if (sb.isNotEmpty()) {
+                sb.append("\n")
             }
-            queryParameter.append("$name: ${requestCopy.url().queryParameter(name)}")
+            sb.append("$name: ${requestCopy.url().queryParameter(name)}")
         }
+        val queryParameter = sb.toString()
 
         val requestBody = bodyToString(requestCopy.body())
+
+        Logger.logRequest(requestUrl, requestMethod, requestHeader, queryParameter, requestBody)
 
         val response: Response
         val mockResponseBody = MockHttp.get().getMockResponseBody(path)
@@ -75,16 +78,20 @@ class MockHttpInterceptor : Interceptor {
             newResponseBody = ResponseBody.create(contentType, responseBodyString)
         }
 
+        val responseBodyStringFormat = formatJson(responseBodyString)
+
         val httpEntity = MockHttpEntity(path)
         httpEntity.requestUrl = requestUrl
         httpEntity.requestMethod = requestMethod
         httpEntity.statusCode = statusCode
         httpEntity.requestHeader = requestHeader
-        httpEntity.queryParameter = queryParameter.toString()
+        httpEntity.queryParameter = queryParameter
         httpEntity.requestBody = requestBody
         httpEntity.responseHeader = responseHeader
-        httpEntity.responseBody = formatJson(responseBodyString)
+        httpEntity.responseBody = responseBodyStringFormat
         MockHttp.get().request(path, httpEntity)
+
+        Logger.logResponse(requestUrl, statusCode, responseHeader, responseBodyStringFormat)
 
         return response.newBuilder().body(newResponseBody).build()
     }

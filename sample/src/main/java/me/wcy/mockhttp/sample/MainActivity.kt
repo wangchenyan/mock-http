@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         MockHttp.get().init(applicationContext,
                 MockHttpOptions.Builder()
-                        .setMockServerPort(3001)
+                        .setMockServerPort(5000)
                         .setMockSleepTime(500)
                         .setLogEnable(true)
                         .setLogTag("MAIN-TAG")

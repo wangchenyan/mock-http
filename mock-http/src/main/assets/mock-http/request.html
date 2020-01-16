@@ -4,70 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <title>MOCK HTTP</title>
-    <script type="text/javascript">
-        var path = ""
-
-        window.onload = function () {
-            path = window.location.search.replace("?path=", "")
-            getRequest()
-            document.title = path
-            document.getElementById("title-text").innerText = path
-        }
-
-        function getRequest() {
-            var xmlhttp = new XMLHttpRequest();
-            xmlhttp.onreadystatechange = function () {
-                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                    var httpEntity = JSON.parse(xmlhttp.responseText)
-                    var general = "Request Url: " + httpEntity.requestUrl
-                        + "\nRequest Method: " + httpEntity.requestMethod
-                        + "\nStatus Code: " + httpEntity.statusCode
-                    document.getElementById("general").innerText = general
-                    document.getElementById("request-header").innerText = httpEntity.requestHeader
-                    document.getElementById("query-parameter").innerText = httpEntity.queryParameter
-                    document.getElementById("request-body").innerText = httpEntity.requestBody
-                    document.getElementById("response-header").innerText = httpEntity.responseHeader
-                    document.getElementById("response-body").value = httpEntity.responseBody
-                }
-            }
-            xmlhttp.open("POST", "/getRequest", true);
-            xmlhttp.setRequestHeader("Content-type", "application/json");
-            var body = {};
-            body.path = path;
-            xmlhttp.send(JSON.stringify(body));
-        }
-
-        function mock() {
-            var xmlhttp = new XMLHttpRequest();
-            xmlhttp.onreadystatechange = function () {
-                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                    alert("MOCK SUCCESS");
-                }
-            }
-            xmlhttp.open("POST", "/mock", true);
-            xmlhttp.setRequestHeader("Content-type", "application/json");
-            var body = {};
-            body.path = path;
-            body.responseBody = encodeURI(document.getElementById("response-body").value);
-            xmlhttp.send(JSON.stringify(body));
-        }
-    </script>
+    <link rel=stylesheet href="/lib/codemirror.css">
+    <script src="/lib/codemirror.js"></script>
 
     <style type="text/css">
         body {
+            width: 100vw;
+            height: 100vh;
             margin: 0;
-            padding: 0;
             border: 0;
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
-        #title-bar {
+        .title-bar {
             width: 100%;
             height: 60px;
             background: #2196f3;
             padding-left: 32px;
             padding-right: 32px;
             position: fixed;
+            z-index: 999;
             top: 0;
             left: 0;
             right: 0;
@@ -76,66 +32,170 @@
             align-items: center;
         }
 
-        #title-text {
+        .title-text {
             color: white;
             font-size: 20px;
             font-weight: bold;
         }
 
-        #content {
-            width: 100%;
+        .github {
+            position: fixed;
+            top: 0px;
+            right: 0px;
+            z-index: 999;
+        }
+
+        .content {
+            width: 100vw;
             flex-grow: 1;
-            margin-top: 60px;
-            margin-bottom: 20px;
-            padding-left: 32px;
-            padding-right: 32px;
+            padding-top: 80px;
+            padding-bottom: 20px;
+            display: flex;
+            flex-direction: row;
+        }
+
+        .content-header {
+            width: 30vw;
+            height: calc(100vh - 100px);
+            overflow-y: scroll;
+            padding-left: 24px;
+            padding-right: 24rpx;
             display: flex;
             flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .content-textarea {
+            width: 70vw;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            position: relative;
         }
 
         .text {
-            color: #757575;
+            color: #999999;
+            word-wrap: break-word;
         }
 
-        #mock-button {
+        .CodeMirror {
+            height: auto;
+            border: 1px solid #ddd;
+        }
+
+        .CodeMirror-scroll {
+            width: calc(70vw - 24px);
+            height: calc(100vh - 170px);
+        }
+
+        .CodeMirror pre {
+            padding-left: 7px;
+            line-height: 1.25;
+        }
+
+        .mock-button {
             width: 100px;
-            padding-top: 10px;
-            padding-bottom: 10px;
+            height: 50px;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             background: #2196f3;
-            text-align: center;
-            color: white;
         }
 
-        #response-body {
-            height: 700px;
-            margin-top: 20px;
+        .mock-button-text {
+            color: white;
         }
     </style>
 </head>
 
 <body>
-    <div id="title-bar">
-        <div id="title-text"></div>
+    <div id="title-bar" class="title-bar">
+        <div id="title-text" class="title-text"></div>
     </div>
-    <div id="content">
-        <h4>General</h4>
-        <div id="general" class="text"></div>
-        <h4>Request Header</h4>
-        <div id="request-header" class="text"></div>
-        <h4>Query Parameter</h4>
-        <div id="query-parameter" class="text"></div>
-        <h4>Request Body</h4>
-        <div id="request-body" class="text"></div>
-        <h4>Response Header</h4>
-        <div id="response-header" class="text"></div>
-        <h4>Response Body</h4>
-        <div id="mock-button" onclick="mock()">MOCK</div>
-        <textarea id="response-body"></textarea>
-    </div>
-    <a href="https://github.com/wangchenyan/mock-http" target="_blank" style="position:fixed;top:0px;right:0px;">
+    <a href="https://github.com/wangchenyan/mock-http" target="_blank" class="github">
         <img width="149" height="149"
             src="https://github.blog/wp-content/uploads/2008/12/forkme_right_green_007200.png?resize=149%2C149"
-            class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
+            class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1">
+    </a>
+    <div id="content" class="content">
+        <div class="content-header">
+            <b>General</b>
+            <p id="general" class="text"></p>
+            <b>Request Header</b>
+            <p id="request-header" class="text"></p>
+            <b>Query Parameter</b>
+            <p id="query-parameter" class="text"></p>
+            <b>Request Body</b>
+            <p id="request-body" class="text"></p>
+            <b>Response Header</b>
+            <p id="response-header" class="text"></p>
+        </div>
+        <div class="content-textarea">
+            <textarea id="response-body"></textarea>
+            <div id="mock-button" class="mock-button" onclick="mock()">
+                <p class="mock-button-text">MOCK</p>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
+
+<script type="text/javascript">
+    var path = ""
+
+    var editor = CodeMirror.fromTextArea(document.getElementById("response-body"), {
+        lineNumbers: true,
+        mode: "text/html",
+        matchBrackets: true,
+        lineWrapping: true
+    });
+
+    window.onload = function () {
+        path = window.location.search.replace("?path=", "")
+        getRequest()
+        document.title = path
+        document.getElementById("title-text").innerText = path
+    }
+
+    function getRequest() {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                var httpEntity = JSON.parse(xmlhttp.responseText)
+                var general = "Request Url: " + httpEntity.requestUrl
+                    + "\nRequest Method: " + httpEntity.requestMethod
+                    + "\nStatus Code: " + httpEntity.statusCode
+                document.getElementById("general").innerText = general
+                document.getElementById("request-header").innerText = httpEntity.requestHeader
+                document.getElementById("query-parameter").innerText = httpEntity.queryParameter
+                document.getElementById("request-body").innerText = httpEntity.requestBody
+                document.getElementById("response-header").innerText = httpEntity.responseHeader
+                editor.setValue(httpEntity.responseBody)
+            }
+        }
+        xmlhttp.open("POST", "/getRequest", true);
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        var body = {};
+        body.path = path;
+        xmlhttp.send(JSON.stringify(body));
+    }
+
+    function mock() {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                alert("MOCK SUCCESS");
+            }
+        }
+        xmlhttp.open("POST", "/mock", true);
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        var body = {};
+        body.path = path;
+        body.responseBody = encodeURI(editor.getValue());
+        xmlhttp.send(JSON.stringify(body));
+    }
+
+</script>

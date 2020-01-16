@@ -72,13 +72,14 @@
             overflow-x: hidden;
         }
 
-        #title-bar {
+        .title-bar {
             width: 100%;
             height: 80px;
             background: #2196f3;
             padding-left: 32px;
             padding-right: 32px;
             position: fixed;
+            z-index: 999;
             top: 0;
             left: 0;
             right: 0;
@@ -87,16 +88,23 @@
             align-items: center;
         }
 
-        #title-text {
+        .title-text {
             color: white;
             font-size: 32px;
             font-weight: bold;
         }
 
-        #content {
+        .github {
+            position: fixed;
+            top: 0px;
+            right: 0px;
+            z-index: 999;
+        }
+
+        .content {
             width: 100%;
-            margin-top: 80px;
-            margin-bottom: 20px;
+            padding-top: 100px;
+            padding-bottom: 20px;
             padding-left: 32px;
             padding-right: 32px;
             display: flex;
@@ -120,21 +128,20 @@
 </head>
 
 <body>
-    <div id="title-bar">
-        <div id="title-text">MOCK HTTP</div>
+    <div id="title-bar" class="title-bar">
+        <div id="title-text" class="title-text">MOCK HTTP</div>
     </div>
-    <div id="content">
-        <h4>MOCK HTTP 请求</h4>
-        <div id="mock-list">
-        </div>
-        <h4>真实 HTTP 请求</h4>
-        <div id="real-list">
-        </div>
-    </div>
-    <a href="https://github.com/wangchenyan/mock-http" target="_blank" style="position:fixed;top:0px;right:0px;">
+    <a href="https://github.com/wangchenyan/mock-http" target="_blank" class="github">
         <img width="149" height="149"
             src="https://github.blog/wp-content/uploads/2008/12/forkme_right_green_007200.png?resize=149%2C149"
-            class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
+            class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1">
+    </a>
+    <div id="content" class="content">
+        <b>MOCK HTTP 请求</b>
+        <p id="mock-list"></p>
+        <b>真实 HTTP 请求</b>
+        <p id="real-list"></p>
+    </div>
 </body>
 
 </html>

@@ -5,9 +5,7 @@ import com.koushikdutta.async.AsyncServer
 import com.koushikdutta.async.http.server.AsyncHttpServer
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.BufferedInputStream
-import java.io.ByteArrayOutputStream
-import java.io.IOException
+import java.io.*
 import java.net.URLDecoder
 import java.nio.charset.Charset
 
@@ -22,12 +20,22 @@ internal class MockHttpServer {
         asyncHttpServer = AsyncHttpServer()
         asyncServer = AsyncServer()
 
+        asyncHttpServer!!.get("/lib/codemirror.css") { request, response ->
+            val stream = getAssetsStream(context, "/lib/codemirror.css")
+            response.sendStream(stream, stream.available().toLong())
+        }
+
+        asyncHttpServer!!.get("/lib/codemirror.js") { request, response ->
+            val stream = getAssetsStream(context, "/lib/codemirror.js")
+            response.sendStream(stream, stream.available().toLong())
+        }
+
         asyncHttpServer!!.get("/") { request, response ->
-            response.send(getAssetsContent(context, "index.html"))
+            response.send(getAssetsContent(context, "/index.html"))
         }
 
         asyncHttpServer!!.get("/request") { request, response ->
-            response.send(getAssetsContent(context, "request.html"))
+            response.send(getAssetsContent(context, "/request.html"))
         }
 
         asyncHttpServer!!.post("/getRequestList") { request, response ->
@@ -94,7 +102,7 @@ internal class MockHttpServer {
     private fun getAssetsContent(context: Context, name: String): String {
         var bis: BufferedInputStream? = null
         try {
-            bis = BufferedInputStream(context.assets.open("mock-http/$name"))
+            bis = BufferedInputStream(context.assets.open("mock-http$name"))
             val baos = ByteArrayOutputStream()
             val tmp = ByteArray(10240)
             var len = bis.read(tmp)
@@ -114,6 +122,15 @@ internal class MockHttpServer {
                     e.printStackTrace()
                 }
             }
+        }
+    }
+
+    private fun getAssetsStream(context: Context, name: String): InputStream {
+        try {
+            return context.assets.open("mock-http$name")
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return StringBufferInputStream("404")
         }
     }
 }

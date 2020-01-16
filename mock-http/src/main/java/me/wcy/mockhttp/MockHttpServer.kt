@@ -5,7 +5,9 @@ import com.koushikdutta.async.AsyncServer
 import com.koushikdutta.async.http.server.AsyncHttpServer
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.*
+import java.io.BufferedInputStream
+import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.net.URLDecoder
 import java.nio.charset.Charset
 
@@ -20,15 +22,7 @@ internal class MockHttpServer {
         asyncHttpServer = AsyncHttpServer()
         asyncServer = AsyncServer()
 
-        asyncHttpServer!!.get("/lib/codemirror.css") { request, response ->
-            val stream = getAssetsStream(context, "/lib/codemirror.css")
-            response.sendStream(stream, stream.available().toLong())
-        }
-
-        asyncHttpServer!!.get("/lib/codemirror.js") { request, response ->
-            val stream = getAssetsStream(context, "/lib/codemirror.js")
-            response.sendStream(stream, stream.available().toLong())
-        }
+        MockHttpUtils.initThirdParty(context, asyncHttpServer!!)
 
         asyncHttpServer!!.get("/") { request, response ->
             response.send(getAssetsContent(context, "/index.html"))
@@ -122,15 +116,6 @@ internal class MockHttpServer {
                     e.printStackTrace()
                 }
             }
-        }
-    }
-
-    private fun getAssetsStream(context: Context, name: String): InputStream {
-        try {
-            return context.assets.open("mock-http$name")
-        } catch (e: IOException) {
-            e.printStackTrace()
-            return StringBufferInputStream("404")
         }
     }
 }

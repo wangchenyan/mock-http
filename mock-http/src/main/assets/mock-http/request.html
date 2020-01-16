@@ -4,8 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <title>MOCK HTTP</title>
-    <link rel=stylesheet href="/lib/codemirror.css">
-    <script src="/lib/codemirror.js"></script>
+    <link rel=stylesheet href="lib/codemirror.css">
+    <link rel="stylesheet" href="addon/lint/lint.css">
+    <script src="lib/codemirror.js"></script>
+    <script src="jsonlint.js"></script>
+    <script src="mode/javascript/javascript.js"></script>
+    <script src="addon/lint/lint.js"></script>
+    <script src="addon/lint/json-lint.js"></script>
 
     <style type="text/css">
         body {
@@ -147,10 +152,16 @@
     var path = ""
 
     var editor = CodeMirror.fromTextArea(document.getElementById("response-body"), {
-        lineNumbers: true,
-        mode: "text/html",
+        mode: "application/json",
         matchBrackets: true,
-        lineWrapping: true
+        gutters: ["CodeMirror-lint-markers"],
+        lint: true,
+        lineNumbers: true,
+        lineWrapping: true,
+        // 缩进单位，默认2
+        indentUnit: 2,
+        // 是否智能缩进
+        smartIndent: true,
     });
 
     window.onload = function () {

@@ -4,10 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <title>MOCK HTTP</title>
+
     <link rel=stylesheet href="lib/codemirror.css">
     <link rel="stylesheet" href="addon/lint/lint.css">
     <script src="lib/codemirror.js"></script>
-    <script src="jsonlint.js"></script>
+    <script src="lib/jsonlint.js"></script>
     <script src="mode/javascript/javascript.js"></script>
     <script src="addon/lint/lint.js"></script>
     <script src="addon/lint/json-lint.js"></script>
@@ -18,6 +19,7 @@
             height: 100vh;
             margin: 0;
             border: 0;
+            position: relative;
             overflow: hidden;
         }
 
@@ -126,16 +128,16 @@
     </a>
     <div id="content" class="content">
         <div class="content-header">
-            <b>General</b>
-            <p id="general" class="text"></p>
-            <b>Request Header</b>
-            <p id="request-header" class="text"></p>
-            <b>Query Parameter</b>
-            <p id="query-parameter" class="text"></p>
-            <b>Request Body</b>
-            <p id="request-body" class="text"></p>
-            <b>Response Header</b>
-            <p id="response-header" class="text"></p>
+            <h4>General</h4>
+            <div id="general" class="text"></div>
+            <h4>Request Header</h4>
+            <div id="request-header" class="text"></div>
+            <h4>Query Parameter</h4>
+            <div id="query-parameter" class="text"></div>
+            <h4>Request Body</h4>
+            <div id="request-body" class="text"></div>
+            <h4>Response Header</h4>
+            <div id="response-header" class="text"></div>
         </div>
         <div class="content-textarea">
             <textarea id="response-body"></textarea>
@@ -145,8 +147,6 @@
         </div>
     </div>
 </body>
-
-</html>
 
 <script type="text/javascript">
     var path = ""
@@ -164,16 +164,16 @@
         smartIndent: true,
     });
 
-    window.onload = function () {
+    window.onload = () => {
         path = window.location.search.replace("?path=", "")
-        getRequest()
         document.title = path
         document.getElementById("title-text").innerText = path
+        getRequest()
     }
 
     function getRequest() {
         var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
+        xmlhttp.onreadystatechange = () => {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 var httpEntity = JSON.parse(xmlhttp.responseText)
                 var general = "Request Url: " + httpEntity.requestUrl
@@ -187,7 +187,7 @@
                 editor.setValue(httpEntity.responseBody)
             }
         }
-        xmlhttp.open("POST", "/getRequest", true);
+        xmlhttp.open("POST", "getRequest", true);
         xmlhttp.setRequestHeader("Content-type", "application/json");
         var body = {};
         body.path = path;
@@ -196,17 +196,18 @@
 
     function mock() {
         var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
+        xmlhttp.onreadystatechange = () => {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 alert("MOCK SUCCESS");
             }
         }
-        xmlhttp.open("POST", "/mock", true);
+        xmlhttp.open("POST", "mock", true);
         xmlhttp.setRequestHeader("Content-type", "application/json");
         var body = {};
         body.path = path;
         body.responseBody = encodeURI(editor.getValue());
         xmlhttp.send(JSON.stringify(body));
     }
-
 </script>
+
+</html>

@@ -27,8 +27,8 @@ object MockHttpUtils {
             response.sendStream(stream, stream.available().toLong())
         }
 
-        asyncHttpServer.get("/jsonlint.js") { request, response ->
-            val stream = getAssetsStream(context, "/jsonlint.js")
+        asyncHttpServer.get("/lib/jsonlint.js") { request, response ->
+            val stream = getAssetsStream(context, "/lib/jsonlint.js")
             response.sendStream(stream, stream.available().toLong())
         }
 

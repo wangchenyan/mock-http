@@ -4,7 +4,7 @@
 ![size](https://img.shields.io/badge/size-39k-FF4500.svg?style=flat)
 ![GitHub](https://img.shields.io/github/license/wangchenyan/mock-http.svg)
 
-MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可以代替 Charles。支持打印网络日志。
+MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可以代替 Charles，支持打印网络日志。
 
 混淆模式下，包大小增加量为39k。
 
@@ -19,6 +19,11 @@ MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可�
 ![](https://raw.githubusercontent.com/wangchenyan/mock-http/master/art/architecture.jpg)
 
 原理解析：https://juejin.im/post/5cecce125188253a275a3d9f
+
+## 更新记录
+
+`v 1.4`
+- MOCK 页面支持 JSON 校验
 
 ## 使用方法
 
@@ -41,7 +46,7 @@ allprojects {
 
 ```
 dependencies {
-    implementation 'com.github.wangchenyan:mock-http:1.3'
+    implementation 'com.github.wangchenyan:mock-http:1.4'
 }
 ```
 

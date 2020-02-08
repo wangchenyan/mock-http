@@ -12,7 +12,7 @@ MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可�
 
 视频演示：
 
-[![](https://raw.githubusercontent.com/wangchenyan/mock-http/master/art/demo.jpg)](https://v.youku.com/v_show/id_XNDE5ODgxOTE0OA==.html)
+[![](https://raw.githubusercontent.com/wangchenyan/mock-http/master/art/demo.jpg)](https://v.youku.com/v_show/id_XNDUzNzE5MTM4NA==.html)
 
 架构设计：
 

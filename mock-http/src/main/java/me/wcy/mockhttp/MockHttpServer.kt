@@ -83,7 +83,8 @@ internal class MockHttpServer {
             }
         }
 
-        asyncHttpServer!!.listen(asyncServer, MockHttp.get().getMockHttpOptions().getMockServerPort())
+        val options = MockHttp.get().getMockHttpOptions()!!
+        asyncHttpServer!!.listen(asyncServer, options.getMockServerPort())
     }
 
     fun stopServer() {

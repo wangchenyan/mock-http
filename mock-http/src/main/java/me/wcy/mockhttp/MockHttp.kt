@@ -16,7 +16,7 @@ class MockHttp private constructor() {
     private var mockHttpOptions: MockHttpOptions? = null
     private var mockPreference: SharedPreferences? = null
     private var httpEntityMap: MutableMap<String, MockHttpEntity>? = null
-    private var hasInit = false
+    private var hasStart = false
 
     companion object {
         fun get(): MockHttp {
@@ -30,68 +30,107 @@ class MockHttp private constructor() {
     }
 
     /**
+     * 获取 MOCK HTTP 配置项
+     */
+    fun getMockHttpOptions(): MockHttpOptions? {
+        return mockHttpOptions
+    }
+
+    /**
+     * 设置 MOCK HTTP 配置项<br>
+     * 需要在 [start] 之前调用，否则将使用默认配置
+     *
+     * @param options MOCK HTTP 配置项
+     * @see MockHttpOptions
+     */
+    fun setMockHttpOptions(options: MockHttpOptions) {
+        this.mockHttpOptions = options
+    }
+
+    /**
      * 启动 MOCK 服务，开始 MOCK<br>
      * 如果是多进程应用，只需要在主进程中初始化
      *
      * @param ctx 上下文
-     * @param options MOCK HTTP 配置项
      */
-    fun init(ctx: Context, options: MockHttpOptions) {
-        if (context != null) {
-            Log.w("MOCK-HTTP", "mock-http has init, destroy first")
-            destroy()
+    fun start(ctx: Context) {
+        if (hasStart()) {
+            Log.w("MOCK-HTTP", "mock-http has start, stop it first")
+            stop()
         }
 
-        Log.d("MOCK-HTTP", "init")
+        Log.d("MOCK-HTTP", "start")
+
+        if (mockHttpOptions == null) {
+            mockHttpOptions = MockHttpOptions.Builder().build()
+        }
 
         context = ctx.applicationContext
-        mockHttpOptions = options
         mockPreference = context!!.getSharedPreferences(context!!.packageName + ".com.github.wangchenyan.mock-http", Context.MODE_PRIVATE)
         httpEntityMap = mutableMapOf()
         mockHttpServer = MockHttpServer()
         mockHttpServer?.startServer(context!!)
 
-        hasInit = true
-    }
-
-    /**
-     * 是否已经初始化
-     */
-    fun hasInit(): Boolean {
-        return hasInit
+        hasStart = true
     }
 
     /**
      * 停止 MOCK 服务，释放资源
      */
-    fun destroy() {
-        Log.d("MOCK-HTTP", "destroy")
+    fun stop() {
+        Log.d("MOCK-HTTP", "stop")
 
         context = null
-        mockHttpOptions = null
         mockPreference = null
         httpEntityMap?.clear()
         httpEntityMap = null
         mockHttpServer?.stopServer()
         mockHttpServer = null
 
-        hasInit = false
+        hasStart = false
     }
 
     /**
-     * 获取 MOCK HTTP 配置项
+     * 是否已经启动
      */
-    fun getMockHttpOptions(): MockHttpOptions {
-        checkInit()
+    fun hasStart(): Boolean {
+        return hasStart
+    }
 
-        return mockHttpOptions!!
+    /**
+     * 启动 MOCK 服务，开始 MOCK<br>
+     * 如果是多进程应用，只需要在主进程中初始化
+     *
+     * @param ctx 上下文
+     * @param options MOCK HTTP 配置项
+     */
+    @Deprecated("已过时", ReplaceWith("start(Context)"), DeprecationLevel.ERROR)
+    fun init(ctx: Context, options: MockHttpOptions) {
+        setMockHttpOptions(options)
+        start(ctx)
+    }
+
+    /**
+     * 停止 MOCK 服务，释放资源
+     */
+    @Deprecated("已过时", ReplaceWith("stop()"), DeprecationLevel.ERROR)
+    fun destroy() {
+        stop()
+    }
+
+    /**
+     * 是否已经启动
+     */
+    @Deprecated("已过时", ReplaceWith("hasStart()"), DeprecationLevel.ERROR)
+    fun hasInit(): Boolean {
+        return hasStart()
     }
 
     /**
      * 获取 MOCK 服务器地址
      */
     fun getMockAddress(): String {
-        checkInit()
+        val port = mockHttpOptions?.getMockServerPort() ?: 0
 
         val wifiManager = context!!.getSystemService(Context.WIFI_SERVICE) as WifiManager
         val ipAddress = wifiManager.connectionInfo.ipAddress
@@ -99,7 +138,7 @@ class MockHttp private constructor() {
                 (ipAddress shr 8 and 0xFF) + "." +
                 (ipAddress shr 16 and 0xFF) + "." +
                 (ipAddress shr 24 and 0xFF)
-        return "$ip:${mockHttpOptions!!.getMockServerPort()}"
+        return "$ip:${port}"
     }
 
     /**
@@ -107,8 +146,8 @@ class MockHttp private constructor() {
      *
      * @param path 路径
      */
-    fun getMockResponseBody(path: String): String? {
-        checkInit()
+    internal fun getMockResponseBody(path: String): String? {
+        checkStart()
 
         if (mockPreference!!.contains(path)) {
             val json = mockPreference!!.getString(path, null)
@@ -125,8 +164,8 @@ class MockHttp private constructor() {
      * @param path 路径
      * @param entity 请求实体
      */
-    fun request(path: String, entity: MockHttpEntity) {
-        checkInit()
+    internal fun request(path: String, entity: MockHttpEntity) {
+        checkStart()
 
         httpEntityMap!![path] = entity
     }
@@ -136,8 +175,8 @@ class MockHttp private constructor() {
      *
      * @param mock true: 已 MOCK 请求, false: 未 MOCK 请求
      */
-    fun getRequestList(mock: Boolean): List<String> {
-        checkInit()
+    internal fun getRequestList(mock: Boolean): List<String> {
+        checkStart()
 
         val mockList = mockPreference!!.all.keys
         if (mock) {
@@ -159,8 +198,8 @@ class MockHttp private constructor() {
      *
      * @param path 路径
      */
-    fun getRequest(path: String): MockHttpEntity? {
-        checkInit()
+    internal fun getRequest(path: String): MockHttpEntity? {
+        checkStart()
 
         if (mockPreference!!.contains(path)) {
             return MockHttpEntity.fromJson(mockPreference!!.getString(path, null))
@@ -176,7 +215,7 @@ class MockHttp private constructor() {
      * @param responseBody 响应体
      */
     internal fun mock(path: String, responseBody: String) {
-        checkInit()
+        checkStart()
 
         var entity: MockHttpEntity?
         if (httpEntityMap!!.containsKey(path)) {
@@ -201,7 +240,7 @@ class MockHttp private constructor() {
      * @param path 路径
      */
     internal fun unmock(path: String) {
-        checkInit()
+        checkStart()
 
         mockPreference!!.edit().remove(path).apply()
     }
@@ -209,9 +248,9 @@ class MockHttp private constructor() {
     /**
      * 检查是否初始化
      */
-    private fun checkInit() {
-        if (context == null) {
-            throw IllegalStateException("mock-http not init, please init first.")
+    private fun checkStart() {
+        if (!hasStart()) {
+            throw IllegalStateException("mock-http not start, please start first.")
         }
     }
 }

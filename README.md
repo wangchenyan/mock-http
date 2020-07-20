@@ -22,6 +22,9 @@ MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可�
 
 ## 更新记录
 
+`v 1.5`
+- 优化公开方法
+
 `v 1.4`
 - MOCK 页面支持 JSON 校验
 
@@ -46,22 +49,26 @@ allprojects {
 
 ```
 dependencies {
-    implementation 'com.github.wangchenyan:mock-http:1.4'
+    implementation 'com.github.wangchenyan:mock-http:1.5'
 }
 ```
 
 **Step 3.** 启用 MOCK-HTTP
 
 ```
-// 初始化
-MockHttp.get().init(applicationContext,
-        MockHttpOptions.Builder()
-                .setMockServerPort(3001)
-                .setMockSleepTime(500)
-                .setLogEnable(true)
-                .setLogTag("TAG-NAME")
-                .setLogLevel(Log.ERROR)
-                .build())
+// 配置项
+val options = MockHttpOptions.Builder()
+        .setMockServerPort(5000)
+        .setMockSleepTime(500)
+        .setLogEnable(true)
+        .setLogTag("MAIN-TAG")
+        .setLogLevel(Log.ERROR)
+        .build()
+MockHttp.get().setMockHttpOptions(options)
+// 启动 MOCK 服务
+MockHttp.get().start(applicationContext)
+// 停止 MOCK 服务
+MockHttp.get().stop()
 
 // 添加 OKHTTP 拦截器
 val okHttpClient = OkHttpClient()
@@ -74,10 +81,11 @@ val okHttpClient = OkHttpClient()
 
 | 方法 | 描述 | 备注 |
 | ---- | ---- | ---- |
-| init(Context, MockHttpOptions) | 启动 MOCK 服务，开始 MOCK | 如果是多进程应用，只需要在主进程中初始化 |
-| destroy() | 停止 MOCK 服务，释放资源 | |
+| setMockHttpOptions(MockHttpOptions) | 设置 MOCK HTTP 配置项 | 需要在 start(Context) 方法之前调用，否则将使用默认配置 |
+| start(Context) | 启动 MOCK 服务，开始 MOCK | 如果是多进程应用，只需要在主进程中初始化 |
+| stop() | 停止 MOCK 服务，释放资源 | |
 | getMockAddress() | 获取 MOCK 服务器地址 | |
-| hasInit() | 是否已经初始化 | |
+| hasStart() | 是否已经启动 | |
 | MockHttpOptions.Builder().setMockServerPort(Int) | 设置 MOCK 端口 | |
 | MockHttpOptions.Builder().setMockSleepTime(Long) | 设置 MOCK 接口等待时长 | 单位毫秒，默认为0 |
 | MockHttpOptions.Builder().setLogEnable(Boolean) | 设置是否打印日志 | 开启 Mock 后才能打印日志 |

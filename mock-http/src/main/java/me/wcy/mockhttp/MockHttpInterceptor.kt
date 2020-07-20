@@ -16,7 +16,7 @@ class MockHttpInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
-        if (!MockHttp.get().hasInit()) {
+        if (!MockHttp.get().hasStart()) {
             return chain.proceed(request)
         }
 
@@ -42,8 +42,9 @@ class MockHttpInterceptor : Interceptor {
         val response: Response
         val mockResponseBody = MockHttp.get().getMockResponseBody(path)
         if (mockResponseBody != null) {
+            val options = MockHttp.get().getMockHttpOptions()!!
             try {
-                TimeUnit.MILLISECONDS.sleep(MockHttp.get().getMockHttpOptions().getMockSleepTime())
+                TimeUnit.MILLISECONDS.sleep(options.getMockSleepTime())
             } catch (e: InterruptedException) {
                 e.printStackTrace()
             }

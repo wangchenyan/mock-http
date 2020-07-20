@@ -6,14 +6,14 @@ import android.util.Log
  * Created by wcy on 2019/5/26.
  */
 class MockHttpOptions private constructor() {
-    private var mockServerPort = 3001
+    private var mockServerPort = 8000
     private var mockSleepTime = 0L
     private var logEnable = false
     private var logTag = "MOCK-HTTP-LOGGER"
     private var logLevel = Log.DEBUG
 
     /**
-     * MOCK 服务端口
+     * MOCK 服务端口，如果已经启动服务，则端口设置不会生效
      */
     fun getMockServerPort(): Int {
         return mockServerPort

@@ -1,5 +1,6 @@
 package me.wcy.mockhttp.sample
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -27,25 +28,31 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        MockHttp.get().init(applicationContext,
-                MockHttpOptions.Builder()
-                        .setMockServerPort(5000)
-                        .setMockSleepTime(500)
-                        .setLogEnable(true)
-                        .setLogTag("MAIN-TAG")
-                        .setLogLevel(Log.ERROR)
-                        .build())
-
-        log("\nMock 地址：\n${MockHttp.get().getMockAddress()}")
+        val options = MockHttpOptions.Builder()
+                .setMockServerPort(5000)
+                .setMockSleepTime(500)
+                .setLogEnable(true)
+                .setLogTag("MAIN-TAG")
+                .setLogLevel(Log.ERROR)
+                .build()
+        MockHttp.get().setMockHttpOptions(options)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        MockHttp.get().destroy()
+        MockHttp.get().stop()
     }
 
     override fun onClick(v: View?) {
         when (v) {
+            btn_start_mock -> {
+                MockHttp.get().start(applicationContext)
+                log("\nMock 服务启动\nMock 后台地址：\n${MockHttp.get().getMockAddress()}")
+            }
+            btn_stop_mock -> {
+                MockHttp.get().stop()
+                log("\nMock 服务停止")
+            }
             btn_request_1 -> {
                 request("https://www.wanandroid.com/article/top/json")
             }

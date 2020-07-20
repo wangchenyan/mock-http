@@ -12,7 +12,7 @@ object Logger {
 
     fun logRequest(url: String, method: String, headers: String, params: String, body: String) {
         val options = MockHttp.get().getMockHttpOptions()
-        if (!options.isLogEnable()) {
+        if (options == null || !options.isLogEnable()) {
             return
         }
 
@@ -29,12 +29,12 @@ object Logger {
                 "\n│ ${prettyBody(body)}" +
                 "\n└───────────────────────────────────────────────────────────────────────────────────────"
 
-        printLog(log)
+        printLog(log, options)
     }
 
     fun logResponse(url: String, status: Int, headers: String, body: String) {
         val options = MockHttp.get().getMockHttpOptions()
-        if (!options.isLogEnable()) {
+        if (options == null || !options.isLogEnable()) {
             return
         }
 
@@ -49,12 +49,11 @@ object Logger {
                 "\n│ ${prettyBody(body)}" +
                 "\n└───────────────────────────────────────────────────────────────────────────────────────"
 
-        printLog(log)
+        printLog(log, options)
     }
 
-    private fun printLog(log: String) {
+    private fun printLog(log: String, options: MockHttpOptions) {
         synchronized(lock) {
-            val options = MockHttp.get().getMockHttpOptions()
             val tag = options.getLogTag()
             val level = options.getLogLevel()
             val logs = log.split("\n")

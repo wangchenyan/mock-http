@@ -9,7 +9,7 @@ import java.io.StringBufferInputStream
 /**
  * Created by wcy on 2020-01-16.
  */
-object MockHttpUtils {
+internal object MockHttpUtils {
 
     fun initThirdParty(context: Context, asyncHttpServer: AsyncHttpServer) {
         asyncHttpServer.get("/lib/codemirror.css") { request, response ->

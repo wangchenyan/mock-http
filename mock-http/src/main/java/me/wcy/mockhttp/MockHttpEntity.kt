@@ -5,7 +5,7 @@ import org.json.JSONObject
 /**
  * Created by wcy on 2019/5/23.
  */
-data class MockHttpEntity(
+internal data class MockHttpEntity(
         var path: String = "",
         var requestUrl: String = "",
         var requestMethod: String = "",

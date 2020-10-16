@@ -1,11 +1,10 @@
 package me.wcy.mockhttp.sample
 
-import android.content.Context
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.ScrollView
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import me.wcy.mockhttp.MockHttp
 import me.wcy.mockhttp.MockHttpInterceptor

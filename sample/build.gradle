@@ -4,7 +4,6 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 28
-    buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "me.wcy.mockhttp.sample"
@@ -31,6 +30,6 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':mock-http')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.squareup.okhttp3:okhttp:3.14.2'
 }

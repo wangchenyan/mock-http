@@ -65,36 +65,27 @@ class MockHttpInterceptor : Interceptor {
         val isSuccessful = response.isSuccessful
         val message = response.message()
         val responseBody = response.body()
-        val contentType = responseBody!!.contentType()
-        var responseBodyString = ""
+        val contentType = responseBody?.contentType()
+        val subtype = contentType?.subtype()
 
-        var subtype: String? = null
-        if (contentType != null) {
-            subtype = contentType.subtype()
+        /**
+         * 仅处理非文件类型
+         */
+        if (responseBody != null && isNotFileRequest(subtype)) {
+            val responseBodyString = responseBody.string()
+            val responseBodyStringFormat = formatJson(responseBodyString)
+            val httpEntity = MockHttpEntity(path, requestUrl, requestMethod, statusCode, requestHeader,
+                    queryParameter, requestBody, responseHeader, responseBodyStringFormat)
+            MockHttp.get().request(path, httpEntity)
+
+            Logger.logResponse(requestUrl, statusCode, responseHeader, responseBodyStringFormat)
+
+            val newResponseBody = ResponseBody.create(contentType, responseBodyString)
+            return response.newBuilder().body(newResponseBody).build()
+        } else {
+            Logger.logResponse(requestUrl, statusCode, responseHeader, "response body is not text, can not mock")
+            return response
         }
-
-        var newResponseBody: ResponseBody? = null
-        if (isNotFileRequest(subtype)) {
-            responseBodyString = responseBody.string()
-            newResponseBody = ResponseBody.create(contentType, responseBodyString)
-        }
-
-        val responseBodyStringFormat = formatJson(responseBodyString)
-
-        val httpEntity = MockHttpEntity(path)
-        httpEntity.requestUrl = requestUrl
-        httpEntity.requestMethod = requestMethod
-        httpEntity.statusCode = statusCode
-        httpEntity.requestHeader = requestHeader
-        httpEntity.queryParameter = queryParameter
-        httpEntity.requestBody = requestBody
-        httpEntity.responseHeader = responseHeader
-        httpEntity.responseBody = responseBodyStringFormat
-        MockHttp.get().request(path, httpEntity)
-
-        Logger.logResponse(requestUrl, statusCode, responseHeader, responseBodyStringFormat)
-
-        return response.newBuilder().body(newResponseBody).build()
     }
 
     private fun isNotFileRequest(subtype: String?): Boolean {

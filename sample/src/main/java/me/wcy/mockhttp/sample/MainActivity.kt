@@ -70,15 +70,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             log("\n开始请求：\n$url")
 
-            var responseBody: String
+            var responseText: String
             try {
                 val response = okHttpClient.newCall(request).execute()
-                responseBody = response.body()?.string() ?: ""
+                val responseBody = response.body()
+                val subtype = responseBody?.contentType()?.subtype()
+                if (responseBody != null && isNotFileRequest(subtype)) {
+                    responseText = responseBody.string()
+                } else {
+                    responseText = "response body is not text"
+                }
             } catch (e: Exception) {
-                responseBody = e.message ?: "request fail"
+                responseText = e.message ?: "request fail"
             }
 
-            log("\n请求结果：\n${formatJson(responseBody)}")
+            log("\n请求结果：\n${formatJson(responseText)}")
         }
     }
 
@@ -89,6 +95,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 scroll_view.fullScroll(ScrollView.FOCUS_DOWN)
             }
         }
+    }
+
+    private fun isNotFileRequest(subtype: String?): Boolean {
+        return subtype != null && (subtype.contains("json")
+                || subtype.contains("xml")
+                || subtype.contains("plain")
+                || subtype.contains("html"))
     }
 
     private fun formatJson(json: String): String {

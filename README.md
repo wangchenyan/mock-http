@@ -5,9 +5,9 @@
 
 MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可以代替 Charles，支持打印网络日志。
 
-正式包仅依赖空壳，mock 功能自动失效，包大小几乎无影响。
+release 模式下仅依赖空壳，mock 功能自动失效，对包大小几乎无影响。
 
-目前仅支持查看和模拟 OKHTTP 发送的请求。
+目前仅支持查看和模拟 OkHttp 发送的请求。
 
 视频演示：
 
@@ -54,8 +54,8 @@ allprojects {
 
 ```
 dependencies {
-    debugImplementation 'com.github.wangchenyan:mock-http:+'
-    releaseImplementation 'com.github.wangchenyan:mock-http-release:+'
+    debugImplementation 'com.github.wangchenyan.mock-http:mock-http:+'
+    releaseImplementation 'com.github.wangchenyan.mock-http:mock-http-release:+'
 }
 ```
 

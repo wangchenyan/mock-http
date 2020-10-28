@@ -1,1 +1,3 @@
-include ':sample', ':mock-http'
+include ':mock-http'
+include ':mock-http-release'
+include ':sample'

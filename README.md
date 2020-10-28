@@ -1,12 +1,11 @@
 # Android MOCK HTTP 接口新方式
 
 [![](https://jitpack.io/v/wangchenyan/mock-http.svg)](https://jitpack.io/#wangchenyan/mock-http)
-![size](https://img.shields.io/badge/size-39k-FF4500.svg?style=flat)
 ![GitHub](https://img.shields.io/github/license/wangchenyan/mock-http.svg)
 
 MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可以代替 Charles，支持打印网络日志。
 
-混淆模式下，包大小增加量为39k。
+正式包仅依赖空壳，mock 功能自动失效，包大小几乎无影响。
 
 目前仅支持查看和模拟 OKHTTP 发送的请求。
 
@@ -52,7 +51,8 @@ allprojects {
 
 ```
 dependencies {
-    implementation 'com.github.wangchenyan:mock-http:+'
+    debugImplementation 'com.github.wangchenyan:mock-http:+'
+    releaseImplementation 'com.github.wangchenyan:mock-http-release:+'
 }
 ```
 

@@ -7,7 +7,7 @@ import java.util.*
 /**
  * Created by wcy on 2019-09-10.
  */
-object Logger {
+internal object Logger {
     private val lock = Any()
 
     fun logRequest(url: String, method: String, headers: String, params: String, body: String) {

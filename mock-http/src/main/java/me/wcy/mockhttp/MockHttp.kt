@@ -98,35 +98,6 @@ class MockHttp private constructor() {
     }
 
     /**
-     * 启动 MOCK 服务，开始 MOCK<br>
-     * 如果是多进程应用，只需要在主进程中初始化
-     *
-     * @param ctx 上下文
-     * @param options MOCK HTTP 配置项
-     */
-    @Deprecated("已过时", ReplaceWith("start(Context)"), DeprecationLevel.ERROR)
-    fun init(ctx: Context, options: MockHttpOptions) {
-        setMockHttpOptions(options)
-        start(ctx)
-    }
-
-    /**
-     * 停止 MOCK 服务，释放资源
-     */
-    @Deprecated("已过时", ReplaceWith("stop()"), DeprecationLevel.ERROR)
-    fun destroy() {
-        stop()
-    }
-
-    /**
-     * 是否已经启动
-     */
-    @Deprecated("已过时", ReplaceWith("hasStart()"), DeprecationLevel.ERROR)
-    fun hasInit(): Boolean {
-        return hasStart()
-    }
-
-    /**
      * 获取 MOCK 服务器地址
      */
     fun getMockAddress(): String {

@@ -7,45 +7,40 @@ import android.util.Log
  * Created by wcy on 2019/5/26.
  */
 class MockHttpOptions private constructor() {
-    private var mockServerPort = 8000
-    private var mockSleepTime = 0L
-    private var logEnable = false
-    private var logTag = "MOCK-HTTP-LOGGER"
-    private var logLevel = Log.DEBUG
 
     /**
      * MOCK 服务端口，如果已经启动服务，则端口设置不会生效
      */
     fun getMockServerPort(): Int {
-        return mockServerPort
+        return 0
     }
 
     /**
      * 获取 MOCK HTTP 等待时间
      */
     fun getMockSleepTime(): Long {
-        return mockSleepTime
+        return 0
     }
 
     /**
      * 是否打印日志
      */
     fun isLogEnable(): Boolean {
-        return logEnable
+        return false
     }
 
     /**
      * 日志标签
      */
     fun getLogTag(): String {
-        return logTag
+        return ""
     }
 
     /**
      * 日志级别
      */
     fun getLogLevel(): Int {
-        return logLevel
+        return 0
     }
 
     class Builder {
@@ -57,7 +52,6 @@ class MockHttpOptions private constructor() {
          * @param port 端口
          */
         fun setMockServerPort(port: Int): Builder {
-            options.mockServerPort = port
             return this
         }
 
@@ -67,7 +61,6 @@ class MockHttpOptions private constructor() {
          * @param milli 毫秒，默认为 0
          */
         fun setMockSleepTime(milli: Long): Builder {
-            options.mockSleepTime = milli
             return this
         }
 
@@ -77,7 +70,6 @@ class MockHttpOptions private constructor() {
          * @param enable 是否打印日志
          */
         fun setLogEnable(enable: Boolean): Builder {
-            options.logEnable = enable
             return this
         }
 
@@ -87,7 +79,6 @@ class MockHttpOptions private constructor() {
          * @param tag 日志标签
          */
         fun setLogTag(tag: String): Builder {
-            options.logTag = tag
             return this
         }
 
@@ -97,7 +88,6 @@ class MockHttpOptions private constructor() {
          * @param level 日志级别，支持 [Log.VERBOSE] [Log.DEBUG] [Log.INFO] [Log.WARN] [Log.ERROR]
          */
         fun setLogLevel(level: Int): Builder {
-            options.logLevel = level
             return this
         }
 

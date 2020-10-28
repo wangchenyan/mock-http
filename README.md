@@ -17,7 +17,7 @@ MOCK-HTTP 是一个方便、易用的查看和模拟 HTTP 请求的工具，可�
 
 ![](https://raw.githubusercontent.com/wangchenyan/mock-http/master/art/architecture.jpg)
 
-原理解析：https://juejin.im/post/5cecce125188253a275a3d9f
+原理解析：https://juejin.im/post/6844903855151382535
 
 ## 更新记录
 

@@ -25,10 +25,12 @@ internal class MockHttpServer {
         MockHttpUtils.initThirdParty(context, asyncHttpServer!!)
 
         asyncHttpServer!!.get("/") { request, response ->
+            response.setContentType("text/html")
             response.send(getAssetsContent(context, "/index.html"))
         }
 
         asyncHttpServer!!.get("/request") { request, response ->
+            response.setContentType("text/html")
             response.send(getAssetsContent(context, "/request.html"))
         }
 
@@ -62,7 +64,7 @@ internal class MockHttpServer {
             try {
                 val requestBody = request.body.get() as JSONObject
                 val path = requestBody.getString("path")
-                val responseBody = URLDecoder.decode(requestBody.getString("responseBody"), "utf-8")
+                val responseBody = URLDecoder.decode(requestBody.getString("responseBody"), Charsets.UTF_8.name())
                 MockHttp.get().mock(path, responseBody)
                 response.send("success")
             } catch (e: Exception) {
@@ -105,7 +107,7 @@ internal class MockHttpServer {
                 baos.write(tmp, 0, len)
                 len = bis.read(tmp)
             }
-            return String(baos.toByteArray(), Charset.forName("utf-8"))
+            return String(baos.toByteArray(), Charsets.UTF_8)
         } catch (e: IOException) {
             e.printStackTrace()
             return "MOCK失败，请检查'assets/mock-http'文件夹是否存在"

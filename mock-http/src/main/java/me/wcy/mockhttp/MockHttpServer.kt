@@ -1,15 +1,14 @@
 package me.wcy.mockhttp
 
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import com.koushikdutta.async.AsyncServer
+import com.koushikdutta.async.callback.CompletedCallback
 import com.koushikdutta.async.http.server.AsyncHttpServer
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.BufferedInputStream
-import java.io.ByteArrayOutputStream
-import java.io.IOException
 import java.net.URLDecoder
-import java.nio.charset.Charset
 
 /**
  * Created by wcy on 2019/5/24.
@@ -18,6 +17,10 @@ internal class MockHttpServer {
     private var asyncHttpServer: AsyncHttpServer? = null
     private var asyncServer: AsyncServer? = null
 
+    companion object {
+        private const val TAG = "MockHttpServer"
+    }
+
     fun startServer(context: Context) {
         asyncHttpServer = AsyncHttpServer()
         asyncServer = AsyncServer()
@@ -25,13 +28,15 @@ internal class MockHttpServer {
         MockHttpUtils.initThirdParty(context, asyncHttpServer!!)
 
         asyncHttpServer!!.get("/") { request, response ->
+            val stream = MockHttpUtils.getAssetsStream(context, "/index.html")
             response.setContentType("text/html")
-            response.send(getAssetsContent(context, "/index.html"))
+            response.sendStream(stream, stream.available().toLong())
         }
 
         asyncHttpServer!!.get("/request") { request, response ->
+            val stream = MockHttpUtils.getAssetsStream(context, "/request.html")
             response.setContentType("text/html")
-            response.send(getAssetsContent(context, "/request.html"))
+            response.sendStream(stream, stream.available().toLong())
         }
 
         asyncHttpServer!!.post("/getRequestList") { request, response ->
@@ -43,7 +48,7 @@ internal class MockHttpServer {
                 response.send(JSONArray(requestList).toString())
             } catch (e: Exception) {
                 e.printStackTrace()
-                response.code(500).end()
+                response.code(500).send(e.message)
             }
         }
 
@@ -56,7 +61,7 @@ internal class MockHttpServer {
                 response.send(httpEntity?.toJson() ?: "{}")
             } catch (e: Exception) {
                 e.printStackTrace()
-                response.code(500).end()
+                response.code(500).send(e.message)
             }
         }
 
@@ -69,7 +74,7 @@ internal class MockHttpServer {
                 response.send("success")
             } catch (e: Exception) {
                 e.printStackTrace()
-                response.code(500).end()
+                response.code(500).send(e.message)
             }
         }
 
@@ -81,11 +86,17 @@ internal class MockHttpServer {
                 response.send("success")
             } catch (e: Exception) {
                 e.printStackTrace()
-                response.code(500).end()
+                response.code(500).send(e.message)
             }
         }
 
         val options = MockHttp.get().getMockHttpOptions()!!
+        asyncHttpServer!!.errorCallback = CompletedCallback {
+            Log.e(TAG, "mock http server error", it)
+            MockHttpUtils.runOnUi(Runnable {
+                Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+            })
+        }
         asyncHttpServer!!.listen(asyncServer, options.getMockServerPort())
     }
 
@@ -94,31 +105,5 @@ internal class MockHttpServer {
         asyncServer?.stop()
         asyncHttpServer = null
         asyncServer = null
-    }
-
-    private fun getAssetsContent(context: Context, name: String): String {
-        var bis: BufferedInputStream? = null
-        try {
-            bis = BufferedInputStream(context.assets.open("mock-http$name"))
-            val baos = ByteArrayOutputStream()
-            val tmp = ByteArray(10240)
-            var len = bis.read(tmp)
-            while (len > 0) {
-                baos.write(tmp, 0, len)
-                len = bis.read(tmp)
-            }
-            return String(baos.toByteArray(), Charsets.UTF_8)
-        } catch (e: IOException) {
-            e.printStackTrace()
-            return "MOCK失败，请检查'assets/mock-http'文件夹是否存在"
-        } finally {
-            if (bis != null) {
-                try {
-                    bis.close()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-            }
-        }
     }
 }
